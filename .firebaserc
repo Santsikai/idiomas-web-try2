@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "vocabularioapp-de800": {
+      "hosting": {
+        "idiomas-web-try2": [
+          "vocabularioapp-de800"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "vocabularioapp-de800"
+  }
+}
