@@ -1,0 +1,10 @@
+{
+  "routes": [
+    "/",
+    "/pages",
+    "/pages/admin",
+    "/pages/busqueda-lenguajes",
+    "/pages/lista-lenguajes",
+    "/pages/perfil"
+  ]
+}
