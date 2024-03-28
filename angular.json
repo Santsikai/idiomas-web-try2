@@ -110,9 +110,10 @@
           }
         },
         "deploy": {
-          "builder": "@angular/fire:deploy",
+          "builder": "angular-cli-ghpages:deploy",
           "options": {
-            "version": 2
+            "version": 2,
+            "buildTarget": "idiomas-web-try2:build:production"
           },
           "configurations": {
             "production": {
