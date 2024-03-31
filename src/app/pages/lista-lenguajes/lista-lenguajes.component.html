@@ -1,3 +1,11 @@
+<div class="alert alert-danger alert-dismissible fade show d-flex align-items-center" role="alert" *ngIf="showAlert">
+  <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+  <div>
+      No se ha podido importar el idioma.
+  </div>
+  <button type="button" class="btn-close" (click)="showAlert=false" aria-label="Close"></button>
+</div>
+
 <div class="ag-format-container">
     <div class="ag-courses_box">
       <div class="ag-courses_item">
@@ -36,14 +44,29 @@
     </div>
   </div>
 
-
-  
   <div class="popup" id="popup" *ngIf="showModal">
     <div class="popup__content">
       <a (click)="showModal=false" class="close">✖</a>
-      <h1>Crear nuevo Lenguaje</h1>
+      <h1>Añadir nuevo Lenguaje</h1>
+      <a class="accept" (click)="openImport()">Importar lenguaje</a>
+      <a class="accept" (click)="openAyuda()">Crear lenguaje con el ayudante</a>
+    </div>
+  </div>
+
+  <div class="popup" id="popup" *ngIf="showModalImport">
+    <div class="popup__content">
+      <a (click)="closeImport()" class="close">✖</a>
+      <h1>Importar nuevo Lenguaje</h1>
       <input type="file" (change)="loadFile($event)">
       <a class="accept" (click)="confirmImport()">Importar lenguaje</a>
+    </div>
+  </div>
+
+  
+  <div class="popup" id="popup" *ngIf="showModalAyuda">
+    <div class="popup__content">
+      <a (click)="closeAyuda()" class="close">✖</a>
+      <h1>Crear nuevo Lenguaje</h1>
         <input type="text" placeholder="Nombre" [(ngModel)]="nombreLeng"/>
         <mat-form-field>
           <mat-label>Selecciona un idioma</mat-label>
@@ -54,15 +77,19 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
-        
-
-        <!-- <select [(ngModel)]="selectedLanguage">
-          <option *ngFor="let language of lang" [value]="language.code">{{ language.name }}</option>
-      </select> -->
       <label>
         <input type="checkbox" [(ngModel)]="privacidad"> lenguaje privado?
       </label>
         <p></p>
         <a (click)="create()" class="accept">Crear lenguaje</a>
+    </div>
+  </div>
+
+
+  <div class="popup" id="popup" *ngIf="showspinner">
+    <div class="popup__content">
+      <h1>Importando Lenguaje</h1>
+      <h3>espere unos segundos...</h3>
+      <div class="square-circle-8"></div>
     </div>
   </div>

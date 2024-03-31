@@ -18,6 +18,10 @@ export class ListaLenguajesComponent {
   selectedLanguage:any;
   privacidad:boolean=false;
   selectedlangs=lang;
+  showspinner=false;
+  showModalAyuda=false;
+  showModalImport=false;
+  showAlert=false;
   constructor(
     private idiomaSV:IdiomaService,
     private router:Router,
@@ -29,6 +33,22 @@ export class ListaLenguajesComponent {
     
   }
 
+openImport(){
+  this.showModal=false;
+  this.showModalImport=true;
+}
+closeImport(){
+  this.showModalImport=false;
+  this.showModal=true;
+}
+openAyuda(){
+  this.showModal=false;
+  this.showModalAyuda=true
+}
+closeAyuda(){
+  this.showModalAyuda=false;
+  this.showModal=true;
+}
   onKey(value:any) { 
     this.selectedlangs = this.search(value.target.value);
     }
@@ -58,15 +78,22 @@ export class ListaLenguajesComponent {
     
    }
    async confirmImport() {
-    await this.fileSV.importDataFromFile(this.file,this.userId)
-    this.showModal=false;
+    this.showspinner=true;
+    this.showModalImport=false;
+    let retu=await this.fileSV.importDataFromFile(this.file,this.userId);
+    debugger;
+    if (retu!=null){
+      this.showAlert=true;
+    }
+    this.showspinner=false;
    }
 
   create() {
-
+    this.showspinner=true;
     this.idiomaSV.createIdioma(this.userId,this.nombreLeng,this.selectedLanguage,this.privacidad);
     this.nombreLeng="";
-    this.showModal=false
+    this.showModalAyuda=false;
+    this.showspinner=false;
 }
 
 

@@ -232,3 +232,30 @@ a.accept {
     margin-bottom: 4rem;
   }
 }
+//spinner
+.square-circle-8 {
+  width:75px;
+  aspect-ratio:1; 
+  display:grid;
+}
+.square-circle-8:before,
+.square-circle-8:after {
+  content:"";
+  grid-area:1/1;
+  width:35px;
+  aspect-ratio:1;
+  box-shadow:0 0 0 3px #000000 inset;
+  filter: drop-shadow(40px 40px 0 #000000);
+  animation:sc8 2s infinite alternate;
+}
+.square-circle-8:after {
+  margin:0 0 0 auto; 
+  filter: drop-shadow(-40px 40px 0 #000000);
+  animation-delay:-1s;
+}
+@keyframes sc8 {
+  0%,10%   {border-radius:0}
+  30%,40%  {border-radius:50% 0}
+  60%,70%  {border-radius:50%}
+  90%,100% {border-radius:0 50%}
+}

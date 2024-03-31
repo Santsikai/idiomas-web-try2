@@ -20,6 +20,7 @@ export class FileService {
   ) { }
 
   async importDataFromFile(file: any, user_id: any) {
+    try{
     const fileContent = await this.readFileContent(file);
     const jsonData = JSON.parse(fileContent);
       let idiomaid = String(formatDate(Date.now(), 'yyyy-MM-dd mm:ss', this.locale));
@@ -35,7 +36,10 @@ export class FileService {
           await this.createPalabras(gvid, palabra);
         }
       }
-    
+      return null;
+    }catch(error){
+      return "no se ha podido importar el lenguaje";
+    }
   }
 
   private readFileContent(file: File): Promise<string> {

@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FileService } from '../../services/files/file.service';
 import { GrupoVocabulario, GrupoVocabularioService } from '../../services/grupoVocabulario/grupo-vocabulario.service';
 import { Idioma, lang, IdiomaService } from '../../services/idioma/idioma.service';
 import { Palabra, PalabraService } from '../../services/palabra/palabra.service';
@@ -29,7 +28,6 @@ export class EditLenguajeComponent implements OnInit{
     private idiomaSV:IdiomaService,
     private palabraSV:PalabraService,
     private gvSV:GrupoVocabularioService,
-    private fileSV:FileService,
     private router:Router
   ) { }
 
@@ -78,9 +76,7 @@ deleteGV(id:any){
 deletepalabra(id:any){
   this.palabraSV.deletePalabra(id)
 }
-export(){
-  this.fileSV.getData(this.idioma.id);
-}
+
   guardar(){
     if(this.idioma.nombre!=this.idiomaCopy.nombre || this.idioma.private != this.idiomaCopy.private){
       if(this.idioma.private != this.idiomaCopy.private){
