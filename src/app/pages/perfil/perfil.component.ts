@@ -9,30 +9,31 @@ import { User, UserService } from '../../services/users/user-service.service';
 })
 export class PerfilComponent implements OnInit{
   edit=true;
-  user=new User();
+  user: User = new User();
   constructor(
     private userSV:UserService,
     private router: Router) { }
 
   ngOnInit() {
-    this.getUser();
+    this.getUserData();
   }
-  async getUser(){
-        this.getUserData(localStorage.getItem("logUserID"));
-  }
-  async getUserData(id:any){
-    this.user= await this.userSV.getUser(id);
+
+  async getUserData(){
+    this.user= await this.userSV.getLoggedUser()!;
   }
   editUser(){
-    this.userSV.changePass(this.user.password);
-    this.userSV.editUser(this.user.id,this.user.password,this.user.email); 
-    this.edit=true
+    this.userSV.editUser(this.user.id,this.user.email, this.user.password,this.user.bloqued).subscribe((res)=>{
+      this.edit=true;
+    }); 
+    
   }
   bloqUser(){
-    this.userSV.bloquearUser(this.user.id,1);
-    localStorage.clear();
-    this.userSV.SignOut();
+    this.userSV.bloquearUser(this.user.id,1).subscribe((res)=>{
+    this.userSV.logout();
     this.router.navigate(['/']);
+    }
+    );
+    
   }
   allowEdit(){
     this.edit=false;

@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { GrupoVocabulario, GrupoVocabularioService } from '../../services/grupoVocabulario/grupo-vocabulario.service';
 import { Idioma, lang, IdiomaService } from '../../services/idioma/idioma.service';
 import { Palabra, PalabraService } from '../../services/palabra/palabra.service';
+import { firstValueFrom } from 'rxjs';
 
 
 
@@ -43,10 +44,11 @@ export class EditLenguajeComponent implements OnInit{
     search(value: string) { 
       let filter = value.toLowerCase();
       return lang.filter(option => option.code.toLowerCase().startsWith(filter));
-    }
+  
+  }
   async getIdioma(){
-    this.idioma= await this.idiomaSV.getIdioma(this.id);
-    this.idiomaCopy={...this.idioma};
+    this.idioma = await firstValueFrom(this.idiomaSV.getIdioma(this.id));
+    this.idiomaCopy = { ...this.idioma };
   }
   getListaGV(){
     this.gvSV.getListGrupoVocabulariobyIdiomaId(this.id).subscribe((res:any)=>{

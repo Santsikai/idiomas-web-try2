@@ -1,4 +1,5 @@
-import { Injectable, NgZone } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable, NgZone } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
@@ -16,171 +17,98 @@ export class UserService {
     public ngZone: NgZone,
     private dbf:AngularFirestore
 ) {
-      this.ngFireAuth.authState.subscribe((user) => {
-        if (user) {
-          this.userData = user;
-          localStorage.setItem('user', JSON.stringify(this.userData));
-          JSON.parse(localStorage.getItem('user')!);
-        } 
-      });
+     
      }
+private http = inject(HttpClient);
+   private API = 'http://localhost:8001/users';
+private AUTH = 'http://localhost:8001/auth';
 
-   public getListUsersBloq(){
-    let b = this.dbf.collection<User>('/users',ref => ref.where("bloqued","==",1));
-    return b.valueChanges();
-   }
-
-   public getListUsersNoBloq(){
-    let b = this.dbf.collection<User>('/users',ref => ref.where("bloqued","==",0));
-    return b.valueChanges();
-   }
-
-   public getListUsersAdmin(){
-    let b = this.dbf.collection<User>('/users',ref => ref.where("role_id","==","1"));
-    return b.valueChanges();
-   }
-
-   public getListUsersNoAdmin(){
-    let b = this.dbf.collection<User>('/users',ref => ref.where("role_id","==","2"));
-    return b.valueChanges();
-   }
-
-   public getUserByEmailandPass(email:any,pass:any){
-    let b = this.dbf.collection<User>('/users',ref => ref.where("email","==",email).where("password","==",pass).limit(1));
-     return b.valueChanges();
-   }
-
-
-  public getUser(id:string){
-    let a=new User();
-     let af= this.dbf.doc<User>(`users/${id}`);
-     af.snapshotChanges().subscribe(arg =>{ 
-      a.id=arg.payload.data()!.id;
-      a.email=arg.payload.data()!.email;
-      a.password=arg.payload.data()!.password;
-      a.bloqued=arg.payload.data()!.bloqued;
-      a.role_id=arg.payload.data()!.role_id;
-    });
-    return a;
-  }
-  public getLoggedUser(){
-    return this.ngFireAuth.currentUser;
-  }
-
-  public login(email:string,pass:string){
-    return this.ngFireAuth.signInWithEmailAndPassword(email, pass);
-   
-  }
-   // Reset Forggot password
-   ForgotPassword(passwordResetEmail: string) {
-    return this.ngFireAuth
-      .sendPasswordResetEmail(passwordResetEmail)
-      .then(() => {
-        window.alert('Password reset email sent, check your inbox.');
-      })
-      .catch((error) => {
-        window.alert(error);
-      });
-  }
-
-  async changePass(pass:any){
-    let u=await this.ngFireAuth.currentUser;
-    u!.updatePassword(pass);
-  }
-
-  bloquearUser(id:any,tipoBloqueo:any){
-    this.dbf.doc(`users/${id}`).set({
-      bloqued: tipoBloqueo,
-    },{merge:true});
-  }
-
-  AdminUser(id:any,rol:any){
-    this.dbf.doc(`users/${id}`).set({
-      role_id: rol,
-    },{merge:true});
-  }
-
-  public editUser(id:string,pass:string,email:string){
-    this.dbf.doc(`users/${id}`).set({
-      password: pass,
-      email:email
-    },{merge:true});
-  }
-
-  public async deleteUser(id:string){
-   let a= await this.ngFireAuth.currentUser;
-   a!.delete();
-    let af= this.dbf.doc<User>(`users/${id}`);
-    af.delete();
-  }
-
-  public async createUser(pass:string,email:string,rol:any){
-    const userAuth = await this.ngFireAuth.createUserWithEmailAndPassword(email, pass);
-    var user = {
-      password: pass,
-      email: userAuth.user!.email,
-      id: userAuth.user!.uid,
-      role_id:rol
-  }
-  let u=new User();
-  u.email=email;
-  u.password=pass;
-  u.id=userAuth.user!.uid;
-  u.bloqued=0;
-  u.role_id=rol;
-  this.SetUserData(user);
-  return u;
-  }
-
-
-// Returns true when user is looged in
-get isLoggedIn(): boolean {
-  const user = JSON.parse(localStorage.getItem('user')!);
-  return user !== null ? true : false;
+public login(email: string, pass: string) {
+  return this.http.post(`${this.AUTH}/login`, {email, password: pass });
 }
-// Sign in with Gmail
-// GoogleAuth() {
-//   return this.AuthLogin(new auth.GoogleAuthProvider());
-// }
-// Auth providers
-AuthLogin(provider:any) {
-  return this.ngFireAuth
-    .signInWithPopup(provider)
-    .then((result) => {
-      this.ngZone.run(() => {
-        this.router.navigate(['dashboard']);
-      });
-      this.SetUserData(result.user);
-    })
-    .catch((error) => {
-      window.alert(error);
-    });
-}
-// Store user in localStorage
-SetUserData(user:any) {
-  const userRef: AngularFirestoreDocument<any> = this.afStore.doc(
-    `users/${user.id}`
-  );
-  const userData: User = {
-    id: user.id,
-    email: user.email,
-    password: user.password,
-    bloqued:0,
-    role_id:user.role_id
-  };
-  return userRef.set(userData, {
-    merge: true,
+
+public createUser(email: string, pass: string, rol: string) {
+  var id = String(Date.now());
+  return this.http.post(`${this.AUTH}/register`, {
+    id :id,
+    email: email,
+    password: pass,
+    role_id: rol,
+    bloqued: 0
   });
 }
-// Sign-out
-SignOut() {
-  return this.ngFireAuth.signOut().then(() => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('isLoginRegister');
-    localStorage.removeItem('rol_Id');
-    this.router.navigate(['login']);
+
+
+public getListUsersBloq() {
+  return this.http.get(`${this.API}/bloqueados`);
+}
+public getListUsersNoBloq() {
+  return this.http.get(`${this.API}/no_bloqueados`);
+}
+public getListUsersAdmins() {
+  return this.http.get(`${this.API}/admins`);
+}
+public getListUsersNoAdmins() {
+  return this.http.get(`${this.API}/no_admins`);
+}
+
+editUser(id: string, email: string, pass: string, bloqued: number) {
+  return this.http.put(`${this.API}/${id}`, {
+    email: email,
+    password: pass,
+    bloqued: bloqued
   });
 }
+
+public bloquearUser(id: string, tipoBloqueo: number) {
+  return this.http.put(`${this.API}/bloquear/${id}?tipo_bloqueo=${tipoBloqueo}`, {});
+}
+
+
+public AdminUser(id: string, rol: string) {
+  return this.http.put(`${this.API}/${id}/rol?role_id=${rol}`, {});
+}
+public deleteUser(id: string) {
+  return this.http.delete(`${this.API}/${id}`);
+}
+public changeRole(id: string, newRole: string) {
+  return this.http.put(`${this.API}/${id}/rol`, { role_id: newRole });
+}
+ // GUARDAR USER LOGUEADO
+ // Guardar usuario logueado
+setLoggedUser(user: User) {
+  if (typeof window !== 'undefined' && localStorage) {
+    localStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('logUserID', user.id);
+    localStorage.setItem('isLoginRegister', 'true');
+    localStorage.setItem('rol_Id', user.role_id);
+  }
+}
+
+// Obtener usuario logueado
+getLoggedUser(): User | null {
+  if (typeof window !== 'undefined' && localStorage) {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
+  }
+  return null;
+}
+getLoggedROL(): User | null {
+  if (typeof window !== 'undefined' && localStorage) {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
+  }
+  return null;
+}
+
+// Cerrar sesión
+logout() {
+  if (typeof window !== 'undefined' && localStorage) {
+    localStorage.clear();
+  }
+}
+
+
 }
 export class User{
   id:string="";

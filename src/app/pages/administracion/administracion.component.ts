@@ -89,14 +89,14 @@ export class AdministracionComponent implements OnInit {
 
   
   async getUserAdmin(){
-    await this.userSV.getListUsersAdmin().subscribe((res)=>{
+    await this.userSV.getListUsersAdmins().subscribe((res)=>{
       this.userAdmins=res;
       this.userAdminsFiltered=res;
     })
   }
 
   async getUserNoAdmin(){
-    await this.userSV.getListUsersNoAdmin().subscribe((res)=>{
+    await this.userSV.getListUsersNoAdmins().subscribe((res)=>{
       this.userNoAdmins=res;
       this.userNoAdminsFiltered=res;
     })

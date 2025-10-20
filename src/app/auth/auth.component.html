@@ -1,25 +1,25 @@
 <!-- alerts -->
-<div class="alert alert-danger alert-dismissible fade show d-flex align-items-center" role="alert" *ngIf="showAlertbbu">
+<div class="alert alert-danger alert-dismissible fade show d-flex align-items-center" role="alert" *ngIf="showAlertBloqueado">
     <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
     <div>
       La cuenta ha sido bloqueda por el usuario, ¿desea desbloquearla? 
     </div>
     <button type="button" (click)="desblock()">Desbloquear</button>
-    <button type="button" class="btn-close" (click)="showAlertbbu=false" aria-label="Close"></button>
+    <button type="button" class="btn-close" (click)="showAlertBloqueado=false" aria-label="Close"></button>
   </div>
-  <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center" role="alert" *ngIf="showAlertbba">
+  <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center" role="alert" *ngIf="showAlertAdmin">
     <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
     <div>
         La cuenta ha sido bloqueada por los administradores.
     </div>
-    <button type="button" class="btn-close" (click)="showAlertbba=false" aria-label="Close"></button>
+    <button type="button" class="btn-close" (click)="showAlertAdmin=false" aria-label="Close"></button>
   </div>
-  <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center" role="alert" *ngIf="showAlertbbanoigualpass">
+  <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center" role="alert" *ngIf="showAlertPassNoCoincide">
     <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
     <div>
         Las contraseñas no coinciden.
     </div>
-    <button type="button" class="btn-close" (click)="showAlertbba=false" aria-label="Close"></button>
+    <button type="button" class="btn-close" (click)="showAlertPassNoCoincide=false" aria-label="Close"></button>
   </div>
 
 <div class="section over-hide">
@@ -67,7 +67,7 @@
     </div>
 </div>
 <!-- FORGOT PASS -->
-<div class="popup" id="popup">
+<!-- <div class="popup" id="popup">
   <div class="popup__content">
     <a href="#" class="close">✖</a>
     <h1>Recuperar Contraseña</h1>
@@ -78,4 +78,4 @@
       <p>Si no recibe este email, porfavor mire en la carpeta de span y si despues sigue sin el email, por favor contactenos.</p>
       <a (click)="confirm()" href="#" class="accept">Recuperar Cuenta</a>
   </div>
-</div>
+</div> -->

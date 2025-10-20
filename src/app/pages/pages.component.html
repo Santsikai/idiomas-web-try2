@@ -13,7 +13,7 @@
       <li><a [routerLink]="['/pages/lista-lenguajes']">Listas Lenguajes</a></li>
       <li><a [routerLink]="['/pages/busqueda-lenguajes']">Busqueda Lenguajes</a></li>
       <li><a [routerLink]="['/pages/perfil']">Perfil</a></li>
-      <li><a [routerLink]="['/pages/admin']" *ngIf="userRol=='1'">Admin</a></li>
+      <li *ngIf="userRol=='1'"><a [routerLink]="['/pages/admin']" >Admin</a></li>
       <li><a (click)="logOut()">Cerrar Sesión</a></li>
     </ul>
   </aside>

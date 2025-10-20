@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { GrupoVocabulario, GrupoVocabularioService } from '../../services/grupoVocabulario/grupo-vocabulario.service';
 import { Palabra, PalabraService } from '../../services/palabra/palabra.service';
 
@@ -35,13 +36,13 @@ export class EjercicioComponent {
     this.id = this.ARoute.snapshot.paramMap.get('gvid')!.replace(/%20/g, " ");
     
     this.getlistPalabraID();
+  
   }
-  async getGV(){
-    this.gv= await this.gvSV.getGrupoVocabulario(this.id);
+async getGV(){
+    this.gv = await firstValueFrom(this.gvSV.getGrupoVocabulario(this.id));
   }
-
   getlistPalabraID(){
-    this.palabraSV.getListPalabraIDbyGvId(this.id).subscribe((res:any)=>{
+    this.palabraSV.getListPalabrabyGvId(this.id).subscribe((res:any)=>{
       this.getGV();
       this.listPalabraID=res;
     })
@@ -127,7 +128,7 @@ export class EjercicioComponent {
     this.showTipoPractica=false;
     this.showEjercicio=true;
     this.totalwords=this.listPalabraID.length;
-    const  word= await this.palabraSV.getPalabra(this.listPalabraID[0])
+    const  word= await firstValueFrom(this.palabraSV.getPalabra(this.listPalabraID[0]));
     if(type=='col1TOcol2'){
       this.title=this.gv.nombre_col1+' => '+this.gv.nombre_col2;
       this.wordShow=word.col1;
@@ -188,7 +189,7 @@ export class EjercicioComponent {
             this.showEjercicio=false;
             this.finEjercicio=true;
       }else{
-      let word= await this.palabraSV.getPalabra(this.listPalabraID[this.wordsdone])
+      let word= await firstValueFrom(this.palabraSV.getPalabra(this.listPalabraID[this.wordsdone]));
       if(this.wordsdone<=this.totalwords){
         this.wordguessed="";
       if(this.chosentype=='col1TOcol2'){
@@ -233,7 +234,7 @@ export class EjercicioComponent {
       this.showEjercicio=false;
       this.finEjercicio=true;
     }else{
-      let word= await this.palabraSV.getPalabra(this.listPalabraID[this.wordsdone])
+      let word= await firstValueFrom(this.palabraSV.getPalabra(this.listPalabraID[this.wordsdone]));
     if(this.chosentype=='col1TOcol2'){
       this.wordShow=word.col1;
       this.wordtoguess=word.col2;
@@ -264,10 +265,12 @@ export class EjercicioComponent {
 
   create() {
 
-    this.palabraSV.createPalabra(this.id,this.col1New,this.col2New);
+    this.palabraSV.createPalabra(this.id,this.col1New,this.col2New).subscribe((res:any)=>{
+      this.listPalabraID.push(res.id);
  this.col1New="";
  this.col2New="";
   this.showModal=false;
+    });
 }
 
 }

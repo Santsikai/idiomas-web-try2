@@ -43,7 +43,7 @@ closeImport(){
 }
 openAyuda(){
   this.showModal=false;
-  this.showModalAyuda=true
+  this.showModalAyuda=true;
 }
 closeAyuda(){
   this.showModalAyuda=false;
@@ -58,15 +58,19 @@ closeAyuda(){
       return lang.filter(option => option.code.toLowerCase().startsWith(filter));
     }
   moveToLeng(idioma:Idioma){
-    localStorage.setItem('langUserID',idioma.user_id)
-    localStorage.setItem('langprivacity',String(idioma.private))
+    if (typeof window !== 'undefined' && localStorage) {
+         localStorage.setItem('langUserID',idioma.user_id)
+         localStorage.setItem('langprivacity',String(idioma.private))
+      }
     this.router.navigate(['/pages/lenguaje',idioma.id]);
   }
   public async getUserID(){
-      this.userId=localStorage.getItem("logUserID");
-      this.idiomaSV.getListIdiomabyUserId(this.userId ).subscribe((res:any)=>{
+       if (typeof window !== 'undefined' && localStorage) {
+         this.userId = localStorage.getItem("logUserID");
+      }
+      this.idiomaSV.getListIdiomaByUserId(this.userId ).subscribe((res:any)=>{
         this.listIdiomas=res
-        this.idiomaSV.getListIdiomabyIdiomaUserId(this.userId).subscribe((r:any)=>{
+        this.idiomaSV.getListIdiomaByIdiomaUserId(this.userId).subscribe((r:any)=>{
           this.listIdiomasC=r
         })
       });
@@ -90,10 +94,15 @@ closeAyuda(){
 
   create() {
     this.showspinner=true;
-    this.idiomaSV.createIdioma(this.userId,this.nombreLeng,this.selectedLanguage,this.privacidad);
-    this.nombreLeng="";
-    this.showModalAyuda=false;
-    this.showspinner=false;
+    this.idiomaSV.createIdioma(this.userId,this.nombreLeng,this.selectedLanguage,this.privacidad).subscribe((res:any)=>{
+      this.listIdiomas.push(res);   // actualiza la lista inmediatamente
+      this.nombreLeng="";
+      this.showModal=false;
+      this.showModalAyuda=false;
+      this.showspinner=false;
+    }
+  );
+    
 }
 
 

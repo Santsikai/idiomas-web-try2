@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { GrupoVocabulario, GrupoVocabularioService } from '../../services/grupoVocabulario/grupo-vocabulario.service';
 import { Idioma, IdiomaService } from '../../services/idioma/idioma.service';
 import { FileService } from '../../services/files/file.service';
+import { firstValueFrom } from 'rxjs';
 
 
 @Component({
@@ -13,6 +14,7 @@ import { FileService } from '../../services/files/file.service';
 export class LenguajeComponent implements OnInit{
   idioma: Idioma = new Idioma;
   listgv:GrupoVocabulario[]=[];
+  logUserID:any;
   id:any;
   showModal=false;
   nameNew:any;
@@ -31,25 +33,32 @@ export class LenguajeComponent implements OnInit{
   ) { } 
   ngOnInit() {
     this.id = this.ARoute.snapshot.paramMap.get('lengid')!.replace(/%20/g, " ");
+       if (typeof window !== 'undefined' && localStorage) {
+         this.logUserID = localStorage.getItem("logUserID");
+      }
     this.getIdioma();
-    this.getListaGV();
+    
     
   }
   async getIdioma(){
-    this.idioma= await this.idiomaSV.getIdioma(this.id);
-  }
+      
+      this.idiomaSV.getIdioma(this.id).subscribe((res:any)=>{
+        this.idioma =  res ;
+        this.getIdiomaUser();
+    this.getListaGV();
+      });
+    }
    getIdiomaUser(){
-    this.idiomaSV.getListIdiomaUserByIdiomaandUser(this.idioma.id,localStorage.getItem('logUserID')!).subscribe((res:any)=>{
+    this.idiomaSV.getListIdiomaUserByIdiomaAndUser(this.idioma.id,this.logUserID!).subscribe((res:any)=>{
+      if(this.idioma.user_id==this.logUserID){
+        this.isUserPropietary=true;
+      }
       this.hasUserAlreadyCompartido=true;
       this.idiomauserid=res[0].id;
     })
   }
   getListaGV(){
     this.gvSV.getListGrupoVocabulariobyIdiomaId(this.id).subscribe((res:any)=>{
-      if(this.idioma.user_id==localStorage.getItem('logUserID')){
-        this.isUserPropietary=true;
-      }
-      this.getIdiomaUser()
       this.listgv=res;
     })
   }
@@ -58,15 +67,17 @@ export class LenguajeComponent implements OnInit{
   }
   create() {
 
-    this.gvSV.createGrupoVocabulario(this.id,this.nameNew,this.col1New,this.col2New);
+    this.gvSV.createGrupoVocabulario(this.id,this.nameNew,this.col1New,this.col2New).subscribe((res:any)=>{
+      this.listgv.push(res);
     this.nameNew="";
  this.col1New="";
  this.col2New="";
   this.showModal=false;
+    });
 }
 
 compartir(){
-  this.idiomaSV.createIdiomaUser(localStorage.getItem('logUserID')!,this.idioma.id);
+  this.idiomaSV.createIdiomaUser(this.logUserID!,this.idioma.id);
   this.hasUserAlreadyCompartido=true;
 }
 descompartir(){

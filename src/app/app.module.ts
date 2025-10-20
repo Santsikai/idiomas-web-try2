@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -18,7 +18,10 @@ import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
 
 import { environment } from '../environments/environment';
 import { UserService } from './services/users/user-service.service';
+import localeEs from '@angular/common/locales/es';
+import { registerLocaleData } from '@angular/common';
 
+registerLocaleData(localeEs);
 @NgModule({
   declarations: [
     AppComponent
@@ -43,8 +46,11 @@ import { UserService } from './services/users/user-service.service';
   providers: [
     provideClientHydration(),
     provideAnimationsAsync(),
-    UserService
+    UserService,
+    { provide: LOCALE_ID, useValue: 'es-ES' }
   ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
+

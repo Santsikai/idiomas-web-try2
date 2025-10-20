@@ -1,196 +1,130 @@
 import { formatDate } from '@angular/common';
-import { Inject, Injectable, LOCALE_ID, NgZone } from '@angular/core';
+import { inject, Inject, Injectable, LOCALE_ID, NgZone } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/compat/firestore';
 import { Router } from '@angular/router';
 import { GrupoVocabularioService } from '../grupoVocabulario/grupo-vocabulario.service';
 import { Observable, forkJoin, from, map, switchMap } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class IdiomaService {
 
-  constructor(
-    public afStore: AngularFirestore,
-    public router: Router,
-    public ngZone: NgZone,
-    private dbf:AngularFirestore,
-    private gvSV:GrupoVocabularioService,
-    @Inject(LOCALE_ID) private locale: string,
-  ) { }
+ private http = inject(HttpClient);
+  private locale = 'es-ES';
 
-  SetIdiomaData(apartado:any) {
-    const IdiomaRef: AngularFirestoreDocument<any> = this.afStore.doc(
-      `idioma/${apartado.id}`
-    );
-    
-    const IdiomaData: Idioma = {
-      id: apartado.id,
-      user_id: apartado.user_id,
-      nombre: apartado.nombre,
-      lenguaje: apartado.lenguaje,
-      private:apartado.private
-    };
-    return IdiomaRef.set(IdiomaData, {
-      merge: true,
+  private API = 'http://localhost:8001/idiomas';
+  private API_USER = 'http://localhost:8001/idioma_users';
+
+  constructor() {}
+
+  // IDIOMA -------------------
+
+  public createIdioma(user_id: string, nombre: string, lenguaje: string, pribate: boolean): Observable<any> {
+    const idioma = new Idioma();
+    idioma.id = formatDate(Date.now(), 'yyyy-MM-dd HH:mm:ss', this.locale);
+    idioma.nombre = nombre;
+    idioma.user_id = user_id;
+    idioma.lenguaje = lenguaje;
+    idioma.private = pribate;
+
+    return this.http.post(`${this.API}/`, idioma);
+  }
+
+  public createIdiomaWithID(id: string, user_id: string, nombre: string, lenguaje: string, pribate: boolean): Observable<any> {
+    const idioma = new Idioma();
+    idioma.id = id;
+    idioma.nombre = nombre;
+    idioma.user_id = user_id;
+    idioma.lenguaje = lenguaje;
+    idioma.private = pribate;
+
+    return this.http.post(`${this.API}/`, idioma);
+  }
+
+  public getIdioma(id: string): Observable<Idioma> {
+    return this.http.get<Idioma>(`${this.API}/${id}`);
+  }
+
+  public getListIdiomaByUserId(userId: string): Observable<Idioma[]> {
+    return this.http.get<Idioma[]>(`${this.API}/por_usuario/${userId}`);
+  }
+
+  public getListIdiomaByNombre(nombre: string): Observable<Idioma[]> {
+    return this.http.get<Idioma[]>(`${this.API}/publicos?nombre=${nombre.toLowerCase()}`);
+  }
+
+  public getListIdiomaByNombreAndLenguaje(nombre: string, lenguaje: string): Observable<Idioma[]> {
+    return this.http.get<Idioma[]>(`${this.API}/publicos_lenguaje?nombre=${nombre.toLowerCase()}&lenguaje=${lenguaje}`);
+  }
+
+  public editIdioma(id: string, newname: string, lenguaje: string, pribate: boolean): Observable<any> {
+    return this.http.put(`${this.API}/${id}`, {
+      nombre: newname,
+      lenguaje: lenguaje,
+      private: pribate,
     });
   }
 
-  public async getIdioma(id:string){
-    let a=new Idioma();
-     let af= this.dbf.doc<Idioma>(`idioma/${id}`);
-     af.snapshotChanges().subscribe(arg =>{ 
-      a.id=arg.payload.data()!.id;
-      a.nombre=arg.payload.data()!.nombre;
-      a.user_id=arg.payload.data()!.user_id;
-      a.lenguaje=arg.payload.data()!.lenguaje;
-      a.private=arg.payload.data()!.private;
+  public deleteIdioma(id: string): Observable<any> {
+    return this.http.delete(`${this.API}/${id}`);
+  }
+
+  // IDIOMA USER -------------------
+
+  public createIdiomaUser(user_id: string, idioma_id: string): Observable<any> {
+    const idiomaUser = new IdiomaUser();
+    idiomaUser.id = formatDate(Date.now(), 'yyyy-MM-dd HH:mm:ss', this.locale);
+    idiomaUser.user_id = user_id;
+    idiomaUser.idioma_id = idioma_id;
+    idiomaUser.active = true;
+
+    return this.http.post(`${this.API_USER}/`, idiomaUser);
+  }
+
+  public getIdiomaUser(id: string): Observable<IdiomaUser> {
+    return this.http.get<IdiomaUser>(`${this.API_USER}/${id}`);
+  }
+
+  public getListIdiomaUserByIdioma(id: string): Observable<IdiomaUser[]> {
+    return this.http.get<IdiomaUser[]>(`${this.API_USER}/por_idioma/${id}`);
+  }
+
+  public getListIdiomaUserByUser(userId: string): Observable<IdiomaUser[]> {
+    return this.http.get<IdiomaUser[]>(`${this.API_USER}/por_usuario/${userId}`);
+  }
+
+  public getListIdiomaUserByIdiomaAndUser(id: string, user: string): Observable<IdiomaUser[]> {
+    return this.http.get<IdiomaUser[]>(`${this.API_USER}/por_idioma_usuario/${id}/${user}`);
+  }
+
+  public editIdiomaUserChangePrivacy(id: string, active: boolean): Observable<any> {
+    return this.http.put(`${this.API_USER}/${id}`, {
+      active: active,
     });
-    return a;
   }
 
-  public getListIdiomabyUserId(id:string){
-   let b = this.dbf.collection<Idioma>('/idioma',ref => ref.where("user_id","==",id));
-    return b.valueChanges();
+  public deleteIdiomaUser(id: string): Observable<any> {
+    return this.http.delete(`${this.API_USER}/${id}`);
   }
 
-  public getListIdiomabyNombre(nombre:string): Observable<any[]> {
-    const nombreLowerCase = nombre.toLowerCase(); // Convertir el valor de búsqueda a minúsculas
-
-    const collection: AngularFirestoreCollection<Idioma> = this.dbf.collection<Idioma>('/idioma',ref => ref.where("private","==",false));
-
-    return collection.valueChanges().pipe(
-      map(idiomas => {
-        return idiomas.filter(idioma => idioma.nombre.toLowerCase().includes(nombreLowerCase));
-      })
-    );
-  }
-  getListIdiomabyNombreAndLenguaje(nombre: string, lenguaje: string): Observable<any[]> {
-    const nombreLowerCase = nombre.toLowerCase(); // Convertir el valor de búsqueda a minúsculas
-
-    const collection: AngularFirestoreCollection<Idioma> = this.dbf.collection<Idioma>('/idioma', ref => ref.where("lenguaje","==",lenguaje));
-
-    return collection.valueChanges().pipe(
-      map(idiomas => {
-        return idiomas.filter(idioma => idioma.nombre.toLowerCase().includes(nombreLowerCase));
+  public deleteAllIdiomaUserByIdioma(id: string): Observable<any> {
+    return this.getListIdiomaUserByIdioma(id).pipe(
+      switchMap((lista) => {
+        const deletes = lista.map(iu => this.deleteIdiomaUser(iu.id));
+        return forkJoin(deletes);
       })
     );
   }
 
-
-  getListIdiomabyIdiomaUserId(userId: string): Observable<any[]> {
+  public getListIdiomaByIdiomaUserId(userId: string): Observable<Idioma[]> {
     return this.getListIdiomaUserByUser(userId).pipe(
-      switchMap((res: any[]) => {
-        const observables = res.map(idiouser => this.getIdioma(idiouser.idioma_id));
-        return forkJoin(observables);
+      switchMap((res: IdiomaUser[]) => {
+        const requests = res.map(iu => this.getIdioma(iu.idioma_id));
+        return forkJoin(requests);
       })
     );
-  }
-
-  public editIdioma(id:string, newname:string,lenguaje:string, pribate:boolean){
-    this.dbf.doc(`idioma/${id}`).set({
-      nombre:newname,
-      lenguaje:lenguaje,
-      private:pribate
-    },{merge:true});
-    
-  }
-
-  public async deleteIdioma(id:string){
-    debugger;
-     await this.gvSV.deleteGrupoVocabulariobyIdiomaId(id);
-
-    let af= this.dbf.doc<Idioma>(`idioma/${id}`);
-    af.delete();
-  }
-
-  public createIdioma(user_id:string,nombre:string,lenguaje:string,pribate:boolean){
-    let apartado=new Idioma();
-    apartado.id=String(formatDate(Date.now(),'yyyy-MM-dd mm:ss',this.locale));
-    apartado.nombre=nombre;
-    apartado.user_id=user_id;
-    apartado.lenguaje=lenguaje;
-    apartado.private=pribate;
-    this.SetIdiomaData(apartado);
-    
-  }
-  public createIdiomaWithID(id:any,user_id:string,nombre:string,lenguaje:string,pribate:boolean){
-    let apartado=new Idioma();
-    apartado.id=id;
-    apartado.nombre=nombre;
-    apartado.user_id=user_id;
-    apartado.lenguaje=lenguaje;
-    apartado.private=pribate;
-    this.SetIdiomaData(apartado);
-    
-  }
-
-
-  //getidiomasuser
-  SetIdiomaUserData(apartado:any) {
-    const IdiomaRef: AngularFirestoreDocument<any> = this.afStore.doc(
-      `idioma-user/${apartado.id}`
-    );
-    
-    const IdiomaData: IdiomaUser = {
-      id: apartado.id,
-      user_id: apartado.user_id,
-      idioma_id: apartado.idioma_id,
-      active: apartado.active,
-    };
-    return IdiomaRef.set(IdiomaData, {
-      merge: true,
-    });
-  }
-  public editIdiomaUserChangePrivacy(id:string, act:boolean){
-    this.dbf.doc(`idioma/${id}`).set({
-      active:act,
-    },{merge:true});
-    
-  }
-  public async getIdiomaUser(id:string){
-    let a=new IdiomaUser();
-     let af= this.dbf.doc<IdiomaUser>(`idioma-user/${id}`);
-     af.snapshotChanges().subscribe(arg =>{ 
-      a.id=arg.payload.data()!.id;
-      a.idioma_id=arg.payload.data()!.idioma_id;
-      a.user_id=arg.payload.data()!.user_id;
-      a.active=arg.payload.data()!.active;
-    });
-    return a;
-  }
-
-  public getListIdiomaUserByIdioma(id:string){
-   let b = this.dbf.collection<IdiomaUser>('/idioma-user',ref => ref.where("idioma_id","==",id));
-    return b.valueChanges();
-  }
-  public getListIdiomaUserByUser(id:string){
-    let b = this.dbf.collection<IdiomaUser>('/idioma-user',ref => ref.where("user_id","==",id).where("active","==",true));
-     return b.valueChanges();
-   }
-   public getListIdiomaUserByIdiomaandUser(id:string,user:string){
-    let b = this.dbf.collection<IdiomaUser>('/idioma-user',ref => ref.where("idioma_id","==",id).where("user_id","==",user).limit(1));
-     return b.valueChanges();
-   }
-  public async deleteIdiomaUser(id:string){
-    let af= this.dbf.doc<IdiomaUser>(`idioma-user/${id}`);
-    af.delete();
-  }
-
-  public deleteAllIdiomaUserByIdioma(id:string){
-    this.getListIdiomaUserByIdioma(id).subscribe((res:any)=>{
-      this.deleteIdiomaUser(res.id)
-    })
-  }
-
-  public createIdiomaUser(user_id:string,idioma_id:string){
-    let apartado=new IdiomaUser();
-    apartado.id=String(formatDate(Date.now(),'yyyy-MM-dd mm:ss',this.locale));
-    apartado.idioma_id=idioma_id;
-    apartado.user_id=user_id;
-    apartado.active=true;
-    this.SetIdiomaUserData(apartado);
-    
   }
 
 }

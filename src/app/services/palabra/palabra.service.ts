@@ -1,122 +1,55 @@
-import { formatDate } from '@angular/common';
-import { Inject, Injectable, LOCALE_ID, NgZone } from '@angular/core';
-import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/compat/firestore';
-import { Router } from '@angular/router';
-import { Observable, first, from, map } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+export interface Palabra {
+  id: string;
+  gv_id: string;
+  col1: string;
+  col2: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class PalabraService {
-  constructor(
-    public afStore: AngularFirestore,
-    public router: Router,
-    public ngZone: NgZone,
-    private dbf:AngularFirestore,
-    @Inject(LOCALE_ID) private locale: string,
-  ) { }
+  private API = 'http://localhost:8001/palabra';
 
-  SetPalabraData(apartado:any) {
-    const PalabraRef: AngularFirestoreDocument<any> = this.afStore.doc(
-      `palabra/${apartado.id}`
-    );
-    
-    const PalabraData: Palabra = {
-      id: apartado.id,
-      gv_id: apartado.gv_id,
-      col1:apartado.col1,
-      col2:apartado.col2,
-    };
-    return PalabraRef.set(PalabraData, {
-      merge: true,
-    });
+  constructor(private http: HttpClient) {}
+
+  // Crear palabra
+  createPalabra( gv_id: string, col1: string, col2: string): Observable<Palabra> {
+    var id=String(Date.now());
+    return this.http.post<Palabra>(`${this.API}/`, { id, gv_id, col1, col2 });
   }
 
-  public async getPalabra(id: string): Promise<Palabra> {
-    return new Promise<Palabra>((resolve, reject) => {
-      this.dbf.doc<Palabra>(`palabra/${id}`).snapshotChanges().pipe(
-        first() // Emite solo el primer valor y completa la suscripción
-      ).subscribe(
-        arg => {
-          const data = arg.payload.data() as Palabra;
-          resolve({
-            id: data.id,
-            gv_id: data.gv_id,
-            col1: data.col1,
-            col2: data.col2
-          });
-        },
-        error => {
-          reject(error); // Rechaza la promesa en caso de error
-        }
-      );
-    });
+  // Obtener todas las palabras
+  getAll(): Observable<Palabra[]> {
+    return this.http.get<Palabra[]>(`${this.API}/`);
   }
 
-  public getListPalabrabyGvId(id:string){
-    let b = this.dbf.collection<Palabra>('/palabra',ref => ref.where("gv_id","==",id));
-     return b.valueChanges();
-   }
-   getListPalabraIDbyGvId(id: string): Observable<string[]> {
-    return this.dbf.collection<Palabra>('/palabra', ref => ref.where("gv_id", "==", id)).snapshotChanges().pipe(
-      map(actions => {
-        return actions.map(action => {
-          const data = action.payload.doc.data() as Palabra;
-          return data.id;
-        });
-      })
-    );
+  // Obtener por id
+  getPalabra(id: string): Observable<Palabra> {
+    return this.http.get<Palabra>(`${this.API}/${id}`);
   }
 
-  public editPalabra(id:string, col1:string,col2:string){
-    this.dbf.doc(`palabra/${id}`).set({
-      col1:col1,
-      col2:col2
-    },{merge:true});
-    
-  }
-  public async deletePalabrabyGvId(id:string){
-    this.getListPalabrabyGvId(id).subscribe((res:any)=>{
-      res.forEach((e:any) => {
-        let af= this.dbf.doc<Palabra>(`palabra/${e.id}`);
-    af.delete();
-      });
-      
-    })
-    
+  // Obtener por gv_id
+  getListPalabrabyGvId(gv_id: string): Observable<Palabra[]> {
+    return this.http.get<Palabra[]>(`${this.API}/gv/${gv_id}`);
   }
 
-  public async deletePalabra(id:string){
-    let af= this.dbf.doc<Palabra>(`palabra/${id}`);
-    af.delete();
-  }
-  private delay(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+  // Editar palabra
+  editPalabra(id: string, col1: string, col2: string): Observable<Palabra> {
+    return this.http.put<Palabra>(`${this.API}/${id}`, { col1, col2 });
   }
 
-  public async createPalabra(gv_id:string,col1:string,col2:string){
-    let apartado=new Palabra();
-    apartado.id=String(formatDate(Date.now(),'yyyy-MM-dd mm:ss',this.locale));
-    apartado.gv_id=gv_id;
-    apartado.col1=col1;
-    apartado.col2=col2;
-    await this.SetPalabraData(apartado)
-    
-  }
-  public createPalabraWithID(id:any,gv_id:string,col1:string,col2:string){
-    let apartado=new Palabra();
-    apartado.id=id;
-    apartado.gv_id=gv_id;
-    apartado.col1=col1;
-    apartado.col2=col2;
-    this.SetPalabraData(apartado);
-    
+  // Eliminar por id
+  deletePalabra(id: string): Observable<any> {
+    return this.http.delete(`${this.API}/${id}`);
   }
 
-}
-export class Palabra{
-  id:string="";
-  gv_id:string="";
-  col1:string="";
-  col2:string="";
+  // Eliminar todas las palabras de un grupo
+  deletePalabrabyGvId(gv_id: string): Observable<any> {
+    return this.http.delete(`${this.API}/gv/${gv_id}`);
+  }
 }

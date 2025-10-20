@@ -23,17 +23,21 @@ import { Router } from '@angular/router';
 })
 export class PagesComponent implements OnInit {
   expanded: boolean = false;
-  userRol=localStorage.getItem('rol_Id')
+ userRol: string | null = null;
+       
+
   constructor(
     private userSV:UserService,
     private router:Router
     ){}
   ngOnInit(): void {
+    if (typeof window !== 'undefined' && localStorage) {
+         this.userRol = localStorage.getItem("rol_Id");
+      }
   }
   logOut(){
     //cerrarsesion
-    localStorage.clear();
-    this.userSV.SignOut();
+    this.userSV.logout();
     this.router.navigate(['/']);
   }
 }

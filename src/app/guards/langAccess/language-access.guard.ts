@@ -11,10 +11,20 @@ export class LanguageAccessGuard implements CanActivate {
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    const langUserID = localStorage.getItem("langUserID") 
-    const langprivacity = localStorage.getItem("langprivacity") 
-    debugger;
-    const logUserID = localStorage.getItem("logUserID") 
+      var langUserID = null;
+       if (typeof window !== 'undefined' && localStorage) {
+         langUserID = localStorage.getItem("langUserID");
+      }
+
+    var langprivacity = null;
+       if (typeof window !== 'undefined' && localStorage) {
+         langprivacity = localStorage.getItem("langprivacity");
+      }
+
+    var logUserID = null;
+       if (typeof window !== 'undefined' && localStorage) {
+         logUserID = localStorage.getItem("logUserID");
+      }
 
     // Verifica si el usuario es el propietario del idioma o si el idioma es privado
     if ((langprivacity=='false') || (langprivacity=='true' && langUserID==logUserID)) {

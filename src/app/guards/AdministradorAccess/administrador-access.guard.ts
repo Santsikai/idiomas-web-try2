@@ -9,7 +9,10 @@ export class AdministradorAccessGuard implements CanActivate {
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-      const rol_Id = localStorage.getItem("rol_Id") 
+      var rol_Id = null;
+       if (typeof window !== 'undefined' && localStorage) {
+         rol_Id = localStorage.getItem("rol_Id");
+      }
   
       // Verifica si el usuario es el propietario del idioma o si el idioma es privado
       if (rol_Id=='1') {

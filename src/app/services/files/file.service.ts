@@ -74,25 +74,28 @@ export class FileService {
     };
     let lengGV = 0;
     let cont = 0;
-    let i = await this.getIdioma(idioma_id);
-    this.gvSV.getListGrupoVocabulariobyIdiomaId(idioma_id).subscribe((res: any) => {
+    // subscribe to idioma observable to get the actual object
+    this.idiomaSV.getIdioma(idioma_id).subscribe((i: any) => {
       json.idioma.nombre = i.nombre;
       json.idioma.lenguaje = i.lenguaje;
       json.idioma.pribate = i.private;
-      lengGV = res.length;
-      for (const gv of res) {
-        let jsonGv = { nombre: gv.nombre, nombre_col1: gv.nombre_col1, nombre_col2: gv.nombre_col2, palabras: [] as { col1: any; col2: any; }[] };
-        this.palabraSV.getListPalabrabyGvId(gv.id).subscribe((r: any) => {
-          r.forEach((p: any) => {
-            jsonGv.palabras.push({ col1: p.col1, col2: p.col2 });
+
+      this.gvSV.getListGrupoVocabulariobyIdiomaId(idioma_id).subscribe((res: any) => {
+        lengGV = res.length;
+        for (const gv of res) {
+          let jsonGv = { nombre: gv.nombre, nombre_col1: gv.nombre_col1, nombre_col2: gv.nombre_col2, palabras: [] as { col1: any; col2: any; }[] };
+          this.palabraSV.getListPalabrabyGvId(gv.id).subscribe((r: any) => {
+            r.forEach((p: any) => {
+              jsonGv.palabras.push({ col1: p.col1, col2: p.col2 });
+            });
+            json.idioma.gv.push(jsonGv);
+            cont = cont + 1;
+            if (lengGV == cont) {
+              this.exportDataToFile(json);
+            }
           });
-          json.idioma.gv.push(jsonGv);
-          cont = cont + 1;
-          if (lengGV == cont) {
-            this.exportDataToFile(json);
-          }
-        });
-      }
+        }
+      });
     });
   }
   
