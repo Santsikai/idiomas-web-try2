@@ -1,23 +1,32 @@
-<header> <button (click)="expanded = !expanded">
-    <span class="material-icons" *ngIf="!expanded">
-    menu
-    </span>
-    <span class="material-icons" *ngIf="expanded">
-        close
-    </span>
-</button> Idiomas WEB(puedes cambiarle el nombre)</header>
 
-<div class="main-layout">
-  <aside class="sidebar" *ngIf="expanded" @slidein>
-    <ul>
-      <li><a [routerLink]="['/pages/lista-lenguajes']">Listas Lenguajes</a></li>
-      <li><a [routerLink]="['/pages/busqueda-lenguajes']">Busqueda Lenguajes</a></li>
-      <li><a [routerLink]="['/pages/perfil']">Perfil</a></li>
-      <li *ngIf="userRol=='1'"><a [routerLink]="['/pages/admin']" >Admin</a></li>
-      <li><a (click)="logOut()">Cerrar Sesión</a></li>
-    </ul>
+
+<link href="https://fonts.googleapis.com/css2?family=Rozha+One&display=swap" rel="stylesheet">
+<section class="banner">
+  <div class="section"><router-outlet></router-outlet></div>
+  
+  
+  <label for="menu-control" class="hamburger">
+    <i class="hamburger__icon"></i>
+    <i class="hamburger__icon"></i>
+    <i class="hamburger__icon"></i>
+  </label>
+  
+  <input type="checkbox" id="menu-control" class="menu-control">
+  
+  <aside class="sidebar">
+    
+    <nav class="sidebar__menu">
+      <a [routerLink]="['/pages/lista-lenguajes']">Listas Lenguajes</a>
+      <a [routerLink]="['/pages/busqueda-lenguajes']">Busqueda Lenguajes</a>
+      <a [routerLink]="['/pages/perfil']">Perfil</a>
+      <a *ngIf="userRol=='1'" [routerLink]="['/pages/admin']" >Admin</a>
+      <a (click)="logOut()">Cerrar Sesión</a>
+    </nav>
+    
+    <label for="menu-control" class="sidebar__close"></label>
+    
+
   </aside>
-  <section>
-    <router-outlet></router-outlet>
-  </section>
-</div>
+  
+  
+</section>

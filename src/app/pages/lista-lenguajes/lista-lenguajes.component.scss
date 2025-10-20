@@ -265,3 +265,47 @@ a.accept {
   60%,70%  {border-radius:50%}
   90%,100% {border-radius:0 50%}
 }
+
+/* altura objetivo por item (ajusta si tus items son más altos o bajos) */
+:root {
+  --ll-item-h: 220px; /* altura estimada de cada .ag-courses_item (incluye margin) */
+}
+
+/* Contenedor con altura fija para mostrar exactamente 9 items (3 columnas x 3 filas)
+   y con scroll si hay más */
+.ag-courses_box {
+  /* 3 filas de --ll-item-h + espacio para padding/gap */
+  max-height: calc(var(--ll-item-h) * 3 + 48px);
+  height: calc(var(--ll-item-h) * 3 + 48px);
+  overflow-y: auto;
+  padding-right: 12px; /* espacio para scrollbar */
+}
+
+/* Scrollbar sencillo */
+.ag-courses_box::-webkit-scrollbar {
+  width: 10px;
+}
+.ag-courses_box::-webkit-scrollbar-thumb {
+  background: rgba(16,39,112,0.18);
+  border-radius: 8px;
+}
+.ag-courses_box::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Responsive: en tablet (2 columnas) necesitamos 5 filas para 9 items -> ajustar altura */
+@media only screen and (max-width: 979px) {
+  .ag-courses_box {
+    max-height: calc(var(--ll-item-h) * 5 + 48px);
+    height: calc(var(--ll-item-h) * 5 + 48px);
+  }
+}
+
+/* Mobile (1 columna): 9 filas */
+@media only screen and (max-width: 639px) {
+  :root { --ll-item-h: 140px; } /* items suelen ser más cortos en mobile -> ajusta si necesario */
+  .ag-courses_box {
+    max-height: calc(var(--ll-item-h) * 9 + 48px);
+    height: calc(var(--ll-item-h) * 9 + 48px);
+  }
+}

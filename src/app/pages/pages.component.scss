@@ -1,25 +1,265 @@
+html, body {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  font-family: 'Rozha One', serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
+  bottom: -14px;
+  position: relative;
+}
+
+.card {
+  position: absolute;
+  bottom: 5%;
+  right: 5%;
+  text-align: center;
+  color: #272243;
+  width: 100%;
+  background: #0B172F;
+  border-radius: 10px;
+  box-shadow: 0 0 20px 20px rgba(0,0,0,0.03);
+  width: 320px;
+  overflow: hidden;
+  animation: updown 3s ease 6;
+  z-index: 10; /* asegurar que la tarjeta quede por debajo de la sidebar */
+  
+  &::before {
+    content: "";
+    border-width: 20px;
+    border-color: transparent;
+    border-style: solid;
+    border-left-color: #0B172F;
+    border-left-width: 30px;
+    display: block;
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    z-index: 2;
+    transform: translatex(calc(-50% + 15px));
+    filter: drop-shadow(5px 5px 4px #000);
+    pointer-events: none;
+  }
+  
+  h1 {
+    margin: 0;
+    padding: 10px;
+    font-size: 16px;
+  }
+  
+  @keyframes updown {
+    0%, 50%, 100% {
+      transform: translatey(0);
+    }
+    20% {
+      transform: translatey(5px);
+    }
+    25% {
+      transform: translatey(-20px);
+    }
+    30% {
+      transform: translatey(20px);
+    }
+    35% {
+      transform: translatey(-5px);
+    }
+  }
+}
+
+.banner {
+  min-height: 100%;
+  width: 100%;
+  /* usar la ruta pública de Angular (carpeta /assets) y url(...) */
+  background-image: url('/assets/background.png');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  padding: 60px;
+  color: #fff;
+}
+
+.hamburger {
+  position: absolute;
+  left: 30px;
+  top: 30px;
+  display: flex;
+  height: 18px;
+  width: 24px;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+  z-index: 100001; /* por encima para poder interactuar */
+  
+  &__icon {
+    display: inline-block;
+    height: 2px;
+    width: 24px;
+    background: #0B172F;
+    border-radius: 2px;
+  }
+}
+
 .sidebar {
-    position: relative;
-    width: 250px;
-    height: 100vh;
-  }
+  height: 100vh;
+  width: 320px;
+  background: #F4ECD9;
+  /* cambiar a fixed para superponerse a todo y usar z-index muy alto */
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 0 60px;
+  display: flex;
+  flex-direction: column;
+  transform: translatex(-100%);
+  transition: transform 0.4s ease-in-out;
+  z-index: 99999; /* muy por encima */
   
-  .main-layout {
+  &__close {
+    position: absolute;
+    top: 50%;
+    right: -30px;
+    background: #0B172F;
+    height: 60px;
+    width: 60px;
+    border-radius: 50%;
+    box-shadow: 0 0 20px 20px rgba(0,0,0,0.03);
     display: flex;
-    flex-direction: row;
-  }
-  
-  ul li {
-    padding: 10px 40px;
-  }
-  
-  header {
-    padding: 15px;
-    display: flex;
-    flex-direction: row;
+    justify-content: center;
     align-items: center;
+    transform: translatex(-100%);
+    cursor: pointer;
+    transition: transform 0.4s ease-in-out 0.2s;
+    z-index: 100000; /* encima incluso de la sidebar si hace falta */
+    
+    &::before, 
+    &::after {
+      content: "";
+      height: 2px;
+      background: #F4ECD9;
+      width: 24px;
+      display: block;
+      position: absolute;
+    }
+    
+    &::after {
+      transform: rotate(90deg);
+    }
   }
   
-  header button {
-    margin-right: 20px;
+  &__menu { //it's means sidebar__menu
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-around;
+    font-size: 36px;
+    margin-top: 80px;
+    margin-bottom: 80px;
+    color: #0B172F;
+    
+    a {
+      color: currentcolor;
+      text-decoration: none;
+      transform: translatex(-80%);
+      transition: transform 0.4s ease-in-out;
+      
+      &::before {
+        content: "";
+        height: 2px;
+        background: #898989;
+        width: 120px;
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        transform: translatex(-50%);
+        opacity: 0;
+        transition: transform 0.4s ease-in-out, opacity 0.4s linear;
+      }
+      
+      &:hover {
+        &::before {
+          transform: translatex(0);
+          opacity: 1;
+        }
+      }
+      
+      @for $i from 1 through 5 {
+        &:nth-child(#{$i}) {
+          transition-delay: $i * 0.05s;
+        }
+      }
+    }
   }
+  
+  &__social {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    
+    li {
+      margin: 4px;
+    }
+    
+    a, svg {
+      display: inline-block;
+      height: 18px;
+      width: 18px;
+    }
+  }
+}
+
+.menu-control {
+  display: none;
+  
+  &:checked {
+    & + .sidebar {
+      transform: translatex(0);
+    }
+    
+    & + .sidebar .sidebar__close {
+      transform: translatex(0) rotate(45deg);
+    }
+    
+    & + .sidebar .sidebar__menu a {
+      transform: translatex(0);
+    }
+  }
+}
+
+.section {
+  /* fondo F4ECD9 con transparencia y bordes redondeados */
+  background: rgba(244,236,217,0.92);
+  border-radius: 14px;
+  padding: 18px;
+  box-sizing: border-box;
+
+  /* dejar 5% de margen vertical (5vh arriba y abajo), centrado horizontalmente */
+  width: 90%;
+  height: 1000%;
+  max-width: 1600px;
+     /* ocupar hasta el 90% de la altura del viewport */
+  margin: 5vh auto;      /* 5vh arriba/abajo, centrado a los lados */
+  overflow: auto;
+  box-shadow: 0 8px 24px rgba(16,39,112,0.08);
+}
+
+/* Ajustes móviles */
+@media (max-width: 600px) {
+  .section {
+    margin: 16px auto;
+    padding: 12px;
+    max-width: calc(100% - 24px);
+    width: auto;
+    border-radius: 12px;
+  }
+}
