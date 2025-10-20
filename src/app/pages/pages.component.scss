@@ -75,16 +75,17 @@ img {
 }
 
 .banner {
+  position: relative; /* para que .section absolute se posicione respecto a banner */
   min-height: 100%;
   width: 100%;
-  /* usar la ruta pública de Angular (carpeta /assets) y url(...) */
   background-image: url('/assets/background.png');
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
   display: flex;
   align-items: center;
-  padding: 60px;
+  justify-content: center;
+  padding: 0; /* quitar padding vertical que estira la pantalla */
   color: #fff;
 }
 
@@ -236,21 +237,34 @@ img {
   }
 }
 
+/* sección con tamaño fijo relativo al viewport: 5vh arriba/abajo y 5% laterales */
 .section {
-  /* fondo F4ECD9 con transparencia y bordes redondeados */
+  position: absolute;
+  top: 5vh;
+  bottom: 5vh;
+  left: 5%;
+  right: 5%;
+  height: auto; /* queda controlado por top/bottom */
+  max-height: none;
+  margin: 0; /* ya posicionada absolutely */
   background: rgba(244,236,217,0.92);
   border-radius: 14px;
   padding: 18px;
   box-sizing: border-box;
 
-  /* dejar 5% de margen vertical (5vh arriba y abajo), centrado horizontalmente */
-  width: 90%;
-  height: 1000%;
-  max-width: 1600px;
-     /* ocupar hasta el 90% de la altura del viewport */
-  margin: 5vh auto;      /* 5vh arriba/abajo, centrado a los lados */
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* scroll dentro del contenido */
   box-shadow: 0 8px 24px rgba(16,39,112,0.08);
+  z-index: 2; /* para que quede encima de background */
+}
+
+/* permitir que el contenedor interno ocupe el espacio disponible */
+.section > .ag-format-container,
+.section .ag-format-container {
+  flex: 1 1 auto;
+  min-height: 0; /* crucial para que flex children permitan overflow */
+  overflow: hidden;
 }
 
 /* Ajustes móviles */
