@@ -1,3 +1,44 @@
+h1 {
+  position: relative;
+  padding: 0;
+  margin: 0;
+  font-family: "Raleway", sans-serif;
+  font-weight: 300;
+  font-size: 40px;
+  color: #080808;
+  -webkit-transition: all 0.4s ease 0s;
+  -o-transition: all 0.4s ease 0s;
+  transition: all 0.4s ease 0s;
+}
+
+h1 span {
+  display: block;
+  font-size: 0.5em;
+  line-height: 1.3;
+}
+h1 em {
+  font-style: normal;
+  font-weight: 600;
+}
+.thirteen h1 {
+  position:relative; font-size:20px; font-weight:700;  letter-spacing:0px; text-transform:uppercase; width:150px; text-align:center; margin:auto; white-space:nowrap; border:2px solid #222;padding:5px 11px 3px 11px;
+}
+.thirteen h1:before, .thirteen h1:after {
+    background-color: #c50000;
+    position:absolute; 
+    content: '';
+    height: 7px;
+
+    width: 7px; border-radius:50%;
+    bottom: 12px;
+}
+.thirteen h1:before {
+   left:-20px;
+}
+.thirteen h1:after {
+   right:-20px;
+}
+
 .ag-format-container {
     width: 1142px;
     margin: 0 auto;
@@ -9,6 +50,9 @@
   body {
     background-color: #000;
   }
+  .cdk-global-overlay-wrapper, .cdk-overlay-container {
+    z-index: 99999 !important;
+ }
   .ag-courses_box {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -72,7 +116,7 @@
   }
   .ag-courses-item_date {
     font-weight: bold;
-    color: #f9b234;
+    color: #002145;
   
     -webkit-transition: color .5s ease;
     -o-transition: color .5s ease;
@@ -81,7 +125,7 @@
   .ag-courses-item_bg {
     height: 128px;
     width: 128px;
-    background-color: #f9b234;
+    background-color: #002145;
   
     z-index: 1;
     position: absolute;
@@ -95,19 +139,19 @@
     transition: all .5s ease;
   }
   .ag-courses_item:nth-child(2n) .ag-courses-item_bg {
-    background-color: #3ecd5e;
+    background-color: #184E6C;
   }
   .ag-courses_item:nth-child(3n) .ag-courses-item_bg {
-    background-color: #e44002;
+    background-color: #567C8D;
   }
   .ag-courses_item:nth-child(4n) .ag-courses-item_bg {
-    background-color: #952aff;
+    background-color: #5BA3C6;
   }
   .ag-courses_item:nth-child(5n) .ag-courses-item_bg {
-    background-color: #cd3e94;
+    background-color: #2d67aa;
   }
   .ag-courses_item:nth-child(6n) .ag-courses-item_bg {
-    background-color: #4c49ea;
+    background-color: #4a8fcf;
   }
   
   
@@ -147,9 +191,45 @@
     }
   }
 
+:host {
+  display: flex;
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 0; /* <- evita que crezca más allá del padre */
+}
+
+/* El contenedor principal ocupa toda la altura de la sección */
+.ag-format-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0; /* <- ESSENCIAL para que el hijo pueda hacer scroll */
+}
+
+/* Caja de items con scroll vertical */
+.ag-courses_box {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;   /* <--- scroll aparece aquí */
+  padding-right: 10px;
+}
+
+/* Opcional: estilo de scrollbar */
+.ag-courses_box::-webkit-scrollbar {
+  width: 10px;
+}
+.ag-courses_box::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #4a8fcf 0%, #184E6C 100%);
+  border-radius: 8px;
+}
+.ag-courses_box::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.05);
+}
 
 
-  @import url('https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800,900&display=swap');
+
+  
+@import url('https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800,900&display=swap');
 
 // Variables
 
@@ -232,6 +312,7 @@ a.accept {
     margin-bottom: 4rem;
   }
 }
+
 //spinner
 .square-circle-8 {
   width:75px;
@@ -259,3 +340,328 @@ a.accept {
   60%,70%  {border-radius:50%}
   90%,100% {border-radius:0 50%}
 }
+
+/* altura objetivo por item (ajusta si tus items son más altos o bajos) */
+:root {
+  --ll-item-h: 220px; /* altura estimada de cada .ag-courses_item (incluye margin) */
+}
+
+/* Contenedor con altura fija para mostrar exactamente 9 items (3 columnas x 3 filas)
+   y con scroll si hay más */
+.ag-courses_box {
+  /* 3 filas de --ll-item-h + espacio para padding/gap */
+  max-height: calc(var(--ll-item-h) * 3 + 48px);
+  height: calc(var(--ll-item-h) * 3 + 48px);
+  overflow-y: auto;
+  padding-right: 12px; /* espacio para scrollbar */
+}
+
+/* Scrollbar sencillo */
+.ag-courses_box::-webkit-scrollbar {
+  width: 10px;
+}
+.ag-courses_box::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #4a8fcf 0%, #184E6C 100%);
+  border-radius: 8px;
+}
+.ag-courses_box::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.05);
+}
+
+
+/* Responsive: en tablet (2 columnas) necesitamos 5 filas para 9 items -> ajustar altura */
+@media only screen and (max-width: 979px) {
+  .ag-courses_box {
+    max-height: calc(var(--ll-item-h) * 5 + 48px);
+    height: calc(var(--ll-item-h) * 5 + 48px);
+  }
+}
+
+/* Mobile (1 columna): 9 filas */
+@media only screen and (max-width: 639px) {
+  :root { --ll-item-h: 140px; } /* items suelen ser más cortos en mobile -> ajusta si necesario */
+  .ag-courses_box {
+    max-height: calc(var(--ll-item-h) * 9 + 48px);
+    height: calc(var(--ll-item-h) * 9 + 48px);
+  }
+}
+
+:host {
+  display: flex;
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 0; /* <- evita que crezca más allá del padre */
+}
+
+/* El contenedor principal ocupa toda la altura de la sección */
+.ag-format-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0; /* <- ESSENCIAL para que el hijo pueda hacer scroll */
+}
+
+/* Caja de items con scroll vertical */
+.ag-courses_box {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;   /* <--- scroll aparece aquí */
+  padding-right: 10px;
+}
+
+/* Opcional: estilo de scrollbar */
+.ag-courses_box::-webkit-scrollbar {
+  width: 8px;
+}
+.ag-courses_box::-webkit-scrollbar-thumb {
+  background: rgba(16,39,112,0.3);
+  border-radius: 6px;
+}
+
+/* Asegurar que el contenedor ocupe la altura de la sección padre y permita overflow interno */
+.section .ag-format-container,
+.ag-format-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;    /* dependerá de .section que tenga altura fija */
+  min-height: 0;   /* crucial para que el hijo pueda hacer overflow */
+}
+
+/* Forzar que la lista ocupe el espacio restante y active scroll interno */
+.section .ag-courses_box,
+.ag-courses_box {
+  flex: 1 1 auto;
+  min-height: 0;       /* imprescindible en contenedores flex */
+  height: auto !important;
+  max-height: none !important; /* eliminar alturas fijas previas */
+  overflow-y: auto;
+  padding-right: 12px;
+}
+
+/* Si hay reglas previas que siguen ganando, usa más especificidad */
+.section[data-role="page"] .ag-courses_box {
+  overflow-y: auto;
+}
+
+/* === Forzar scroll interno dentro de .section ===
+   - .section está en position:absolute con top/bottom => altura fija.
+   - hacemos que el contenedor ocupe 100% y la caja de items sea scrollable.
+*/
+.section > .ag-format-container,
+.section .ag-format-container {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  min-height: 0 !important; /* imprescindible para overflow en flex */
+  box-sizing: border-box !important;
+}
+
+/* Contenedor de items: ocupar el espacio restante y permitir scroll */
+.section .ag-format-container > .ag-courses_box,
+.section .ag-courses_box {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: flex-start !important;
+
+  flex: 1 1 auto !important;
+  min-height: 0 !important;         /* imprescindible */
+  height: auto !important;
+  max-height: none !important;      /* eliminar alturas previas */
+  overflow-y: auto !important;      /* <- aquí está el scroll */
+  padding: 18px 12px !important;    /* reducir padding para no inflar */
+}
+
+/* Asegurar que cada item respete el flujo y no fuerce cajas altas */
+.section .ag-courses_item {
+  margin: 0 12px 18px !important;
+  flex-basis: calc(33.333% - 24px) !important;
+  box-sizing: border-box !important;
+}
+.ag-courses_box::-webkit-scrollbar {
+  width: 10px;
+}
+.ag-courses_box::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #4a8fcf 0%, #184E6C 100%);
+  border-radius: 8px;
+}
+.ag-courses_box::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.05);
+}
+
+/* Header fijo y horizontal */
+.page-header {
+  position: sticky; /* si quieres fijo en viewport: usar 'fixed' */
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  background: rgba(244,236,217,0.95); /* mismo tono que .section */
+  border-bottom: 1px solid rgba(16,39,112,0.06);
+  box-shadow: 0 6px 18px rgba(16,39,112,0.04);
+}
+
+/* Layout interno: título a la izquierda, acciones/meta a la derecha */
+.page-header .title { flex: 1 1 auto; }
+.page-header .meta  { flex: 0 0 auto; display:flex; gap:12px; align-items:center; }
+
+/* Evitar solapamiento: desplazar contenido debajo del header */
+.section .ag-format-container {
+  padding-top: 64px; /* ajustar si cambias la altura del header */
+}
+
+/* Responsive: apilar en móvil */
+@media (max-width: 767px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 12px;
+  }
+  .section .ag-format-container { padding-top: 86px; } /* mayor espacio si header ocupa 2 filas */
+}
+
+
+.cols{
+margin-left: 15%;
+display: flex;
+flex-direction: column;
+align-items: center;
+
+}
+.title{
+  display: flex;
+  height: 10%;
+  z-index: 200;
+}
+
+.hamburger {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  padding: 20px;
+
+  
+  &:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 20px;
+    background: #184E6C;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #184E6C, #4a8fcf);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #184E6C, #4a8fcf); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    transform: rotate(0deg);
+    transition: all 0.4s cubic-bezier(0.54, -0.10, 0.57, 0.57);
+  }
+  
+  .hamburger-input {
+    position: absolute;
+    opacity: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    cursor: pointer;
+  }
+  
+  .hamburger-line {
+    width: 100%;
+    background: #fff;
+    height: 2px;
+    display: block;
+    border-radius: 6px;
+    transition: transform 0.4s cubic-bezier(0.54, -0.81, 0.57, 0.57);
+    position: relative;
+    
+    &.first,
+    &.third {
+      width: 50%;
+    }
+    
+    &.third {
+      margin-left: 50%;
+      transform-origin: left;
+    }
+  }
+}
+
+.menu-button-wrapper {
+  position: relative;
+  display: inline-block;
+  
+  .item-list {
+    position: absolute;
+    top: 90px;
+    transform: translateX(-50%) scale(0);
+    transform-origin: center;
+    transition: all 0.4s cubic-bezier(0.54, -0.10, 0.57, 0.57);
+    background-color: #4a8fcf;
+    color: #fff;
+    width: 200px;
+    left: 50%;
+    padding: 15px 0;
+    text-align: left;
+    border-radius: 100px;
+    font-weight: 300;
+    opacity: 0;
+    user-select: none;
+    
+    div {
+      padding: 10px 30px;
+      cursor: pointer;
+    }
+  }
+  
+  .menu-button {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    left: 0;
+    z-index: 2;
+    opacity: 0;
+    cursor: pointer;
+  }
+}
+
+.menu-button {
+  &:checked ~ .item-list {
+    transform: translateX(-50%) scale(1);
+    border-radius: 20px;
+    opacity: 1;
+    user-select: auto;
+  }  
+  
+  &:checked ~ .icon-wrapper .hamburger-line.second {
+    transform: rotate(-45deg); 
+  }
+
+  &:checked ~ .icon-wrapper .hamburger-line.first {
+    transform: translate(2px, 8px) rotate(-135deg);
+  }
+
+  &:checked ~ .icon-wrapper .hamburger-line.third {
+    transform: translate(11px, -3px) rotate(-135deg);
+  }
+  
+  &:checked ~ .icon-wrapper .hamburger:before {
+    transform: rotate(45deg);
+  }
+}
+
+ .thirteen{
+  margin-right: 150%;
+ }
+ a{
+  text-decoration: none;
+  color: white;
+ }

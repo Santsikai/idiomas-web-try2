@@ -1,9 +1,17 @@
-<h1>Editar Lenguaje:</h1>
-<button (click)="guardar()">guardar cambios</button>
-<button (click)="deleteidioma()">borrar idioma</button>
-<button [routerLink]="['/pages/lenguaje',idioma.id]">volver al lenguaje</button>
-<input type="text" placeholder="nombre lenguaje" [(ngModel)]="idioma.nombre" />
-<mat-form-field>
+<div class ="cols">
+<div class="title">
+<div class="alt-two">
+  <h1>Editar Idioma: <span>{{idioma.nombre}}</span></h1>
+</div>
+<ul class="menu">
+  <li><span><a (click)="guardar()">Guardar</a></span></li>
+  <li><span><a (click)="deleteidioma()">Borrar</a></span></li>
+  <li><span><a [routerLink]="['/pages/lenguaje',idioma.id]">Salir de edición</a></span></li>
+</ul>
+</div>
+
+<div class="formulario">
+  <mat-form-field>
   <mat-label>Selecciona un idioma</mat-label>
   <mat-select [(value)]="idioma.lenguaje">
     <input (keyup)="onKey($event)">
@@ -12,13 +20,14 @@
     </mat-option>
   </mat-select>
 </mat-form-field>
+<div class="form__group field">
+  <input type="input" class="form__field" placeholder="Nombre idioma" name="name" id='name' [(ngModel)]="idioma.nombre" />
+  <label for="name" class="form__label">Name</label>
+</div>
 
-<select [(ngModel)]="idioma.lenguaje">
-  <option *ngFor="let language of selectedlangs" [value]="language.code">{{ language.name }}</option>
-</select>
-<label>
-  <input type="checkbox" [(ngModel)]="!idioma.private"> lenguaje privado?
-</label>
+</div>
+
+
 
 <div id="floats">
 <div id="listgv">
@@ -44,5 +53,6 @@
         </div>
       </ul>
     
+</div>
 </div>
 </div>

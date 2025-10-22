@@ -264,7 +264,6 @@ img {
 .section .ag-format-container {
   flex: 1 1 auto;
   min-height: 0; /* crucial para que flex children permitan overflow */
-  overflow: hidden;
 }
 
 /* Ajustes móviles */

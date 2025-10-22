@@ -150,6 +150,40 @@
     }
   }
 
+:host {
+  display: flex;
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 0; /* <- evita que crezca más allá del padre */
+}
+
+/* El contenedor principal ocupa toda la altura de la sección */
+.ag-format-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0; /* <- ESSENCIAL para que el hijo pueda hacer scroll */
+}
+
+/* Caja de items con scroll vertical */
+.ag-courses_box {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;   /* <--- scroll aparece aquí */
+  padding-right: 10px;
+}
+
+/* Opcional: estilo de scrollbar */
+.ag-courses_box::-webkit-scrollbar {
+  width: 10px;
+}
+.ag-courses_box::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #4a8fcf 0%, #184E6C 100%);
+  border-radius: 8px;
+}
+.ag-courses_box::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.05);
+}
 
 
 
@@ -286,12 +320,13 @@ a.accept {
   width: 10px;
 }
 .ag-courses_box::-webkit-scrollbar-thumb {
-  background: rgba(16,39,112,0.18);
+  background: linear-gradient(180deg, #4a8fcf 0%, #184E6C 100%);
   border-radius: 8px;
 }
 .ag-courses_box::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(255,255,255,0.05);
 }
+
 
 /* Responsive: en tablet (2 columnas) necesitamos 5 filas para 9 items -> ajustar altura */
 @media only screen and (max-width: 979px) {
@@ -310,26 +345,37 @@ a.accept {
   }
 }
 
-/* hacer que el contenedor ocupe toda la altura disponible y permita scroll interno */
+:host {
+  display: flex;
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 0; /* <- evita que crezca más allá del padre */
+}
+
+/* El contenedor principal ocupa toda la altura de la sección */
 .ag-format-container {
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-height: 0;
+  min-height: 0; /* <- ESSENCIAL para que el hijo pueda hacer scroll */
 }
 
-/* dejar que la grid/cajas hagan scroll dentro del contenedor */
+/* Caja de items con scroll vertical */
 .ag-courses_box {
   flex: 1 1 auto;
-  min-height: 0; /* importante para que overflow funcione en flex */
-  overflow-y: auto;
-  max-height: none; /* eliminar alturas fijas previas */
-  padding-right: 12px; /* espacio para scrollbar */
+  min-height: 0;
+  overflow-y: auto;   /* <--- scroll aparece aquí */
+  padding-right: 10px;
 }
 
-/* mantener estilos de scrollbar si quieres */
-.ag-courses_box::-webkit-scrollbar { width: 10px; }
-.ag-courses_box::-webkit-scrollbar-thumb { background: rgba(16,39,112,0.18); border-radius: 8px; }
+/* Opcional: estilo de scrollbar */
+.ag-courses_box::-webkit-scrollbar {
+  width: 8px;
+}
+.ag-courses_box::-webkit-scrollbar-thumb {
+  background: rgba(16,39,112,0.3);
+  border-radius: 6px;
+}
 
 /* Asegurar que el contenedor ocupe la altura de la sección padre y permita overflow interno */
 .section .ag-format-container,
@@ -390,10 +436,15 @@ a.accept {
   flex-basis: calc(33.333% - 24px) !important;
   box-sizing: border-box !important;
 }
+.ag-courses_box::-webkit-scrollbar {
+  width: 10px;
+}
+.ag-courses_box::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #4a8fcf 0%, #184E6C 100%);
+  border-radius: 8px;
+}
+.ag-courses_box::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.05);
+}
 
-/* Scrollbar (opcional) */
-.section .ag-courses_box::-webkit-scrollbar { width: 10px; }
-.section .ag-courses_box::-webkit-scrollbar-thumb { background: rgba(16,39,112,0.18); border-radius: 8px; }
 
-/* Debug rápido (quita después) para ver cajas */
-.section { /*outline: 2px dashed rgba(0,0,0,0.15) !important;*/ }

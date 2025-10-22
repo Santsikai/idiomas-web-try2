@@ -1,8 +1,32 @@
-<h1>{{idioma.nombre}}</h1>
-<button (click)="export()">exportar idioma</button>
-<button [routerLink]="['/pages/editar-lenguaje',idioma.id]" *ngIf="isUserPropietary">configuracion</button>
-<button (click)="compartir()" *ngIf="!isUserPropietary && !hasUserAlreadyCompartido"> añadir lenguaje compartido</button>
-<button (click)="descompartir()" *ngIf="!isUserPropietary && hasUserAlreadyCompartido"> quitar lenguaje compartido</button>
+<div class ="cols">
+<div class="title">
+<div class="thirteen">
+  <h1>{{idioma.nombre}}</h1>
+</div>
+<label class="menu-button-wrapper" for="">
+    <input type="checkbox" class="menu-button">
+    <div class="icon-wrapper">
+      <label class="hamburger">
+        <input class="hamburger-input" type="checkbox">
+        <span class="hamburger-line first"></span>
+        <span class="hamburger-line second"></span>
+        <span class="hamburger-line third"></span>
+      </label>
+    </div>
+    <div class="item-list">
+      <div><a (click)="export()">Exportar Idioma</a></div>
+      <div><a [routerLink]="['/pages/editar-lenguaje',idioma.id]" *ngIf="isUserPropietary">Configuración</a></div>
+      <div *ngIf="!isUserPropietary">
+        <a (click)="compartir()" *ngIf="!isUserPropietary && !hasUserAlreadyCompartido"> Añadir Idioma a biblioteca</a> 
+        <a (click)="descompartir()" *ngIf="!isUserPropietary && hasUserAlreadyCompartido"> Quitar Idioma de biblioteca</a>
+      </div>
+    </div>
+  </label>
+
+
+
+
+</div>
 <div class="ag-format-container">
     <div class="ag-courses_box">
       <div class="ag-courses_item">
@@ -48,4 +72,6 @@
       <h3>espere unos segundos...</h3>
       <div class="square-circle-8"></div>
     </div>
+  </div>
+
   </div>
