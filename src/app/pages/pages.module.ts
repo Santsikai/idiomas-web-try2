@@ -16,7 +16,7 @@ import { FileService } from "../services/files/file.service";
     PagesRoutingModule,
     CommonModule,
     MatSelectModule,
-    MatFormFieldModule
+    MatFormFieldModule,
   ],
   declarations: [
     PagesComponent,

@@ -1,58 +1,157 @@
-<div class ="cols">
-<div class="title">
-<div class="alt-two">
-  <h1>Editar Idioma: <span>{{idioma.nombre}}</span></h1>
-</div>
-<ul class="menu">
-  <li><span><a (click)="guardar()">Guardar</a></span></li>
-  <li><span><a (click)="deleteidioma()">Borrar</a></span></li>
-  <li><span><a [routerLink]="['/pages/lenguaje',idioma.id]">Salir de edición</a></span></li>
-</ul>
-</div>
+<div class="page-wrapper">
 
-<div class="formulario">
-  <mat-form-field>
-  <mat-label>Selecciona un idioma</mat-label>
-  <mat-select [(value)]="idioma.lenguaje">
-    <input (keyup)="onKey($event)">
-    <mat-option *ngFor="let language of selectedlangs" [value]="language.code">
-      {{ language.name }}
-    </mat-option>
-  </mat-select>
-</mat-form-field>
-<div class="form__group field">
-  <input type="input" class="form__field" placeholder="Nombre idioma" name="name" id='name' [(ngModel)]="idioma.nombre" />
-  <label for="name" class="form__label">Name</label>
-</div>
+  <!-- Toast de alerta -->
+  <div class="toast" [class.toast--success]="alertType==='success'" [class.toast--error]="alertType==='error'" *ngIf="alertMsg">
+    <span class="toast__icon">{{ alertType === 'success' ? '✓' : '✕' }}</span>
+    {{ alertMsg }}
+  </div>
 
-</div>
+  <!-- Header -->
+  <div class="page-header">
+    <div class="page-header__title">
+      <span class="page-header__badge" *ngIf="idioma.lenguaje">{{ idioma.lenguaje }}</span>
+      <h1>Editar: {{ idioma.nombre }}</h1>
+    </div>
+    <div class="page-header__actions">
+      <a class="btn-action btn-action--primary" (click)="guardar()">Guardar</a>
+      <a class="btn-action btn-action--danger" (click)="showConfirmDelete=true">Borrar idioma</a>
+      <a class="btn-action" [routerLink]="['/pages/lenguaje', idioma.id]">← Salir</a>
+    </div>
+  </div>
 
+  <!-- Body -->
+  <div class="edit-body">
 
+    <!-- Columna izquierda: Configuración + tabla de palabras -->
+    <div class="edit-col edit-col--left">
 
-<div id="floats">
-<div id="listgv">
-<ul>
-    <li *ngFor="let gv of listgv">
-      {{gv.nombre}}
-    <button (click)="getListPalabras(gv)">editar grupo palabra </button>
-    <button (click)="deleteGV(gv.id)">eliminar grupo palabra </button>
-    </li>
-</ul>
-</div>
-<div id="editarGV" *ngIf="showEditGV">
-    <input type="text" placeholder="nombregv" [(ngModel)]="gv.nombre" />
-    <ul id="tabla" class="dark">
-        <div class="row header">
-          <div class="col"><input type="text" placeholder="nombregv" [(ngModel)]="gv.nombre_col1" /></div>
-          <div class="col"><div class="col"><input type="text" placeholder="nombregv" [(ngModel)]="gv.nombre_col2" /></div></div>
+      <div class="edit-panel">
+        <h2 class="edit-panel__title">Configuración</h2>
+        <div class="field-group">
+          <label class="field-label">Nombre</label>
+          <input type="text" class="field-input" placeholder="Nombre del idioma" [(ngModel)]="idioma.nombre"/>
         </div>
-        <div class="row" *ngFor="let item of listPalabra">
-          <div class="col"><input type="text" placeholder="nombregv" [(ngModel)]="item.col1" /></div>
-          <div class="col"><input type="text" placeholder="nombregv" [(ngModel)]="item.col2" /></div>
-          <div class="col"><button (click)="deletepalabra(item.id)">eliminar palabra </button></div>
+        <div class="field-group">
+          <label class="field-label">Idioma base</label>
+          <mat-form-field class="field-select">
+            <mat-select placeholder="Selecciona un idioma" [(value)]="idioma.lenguaje">
+              <input (keyup)="onKey($event)">
+              <mat-option *ngFor="let language of selectedlangs" [value]="language.code">
+                {{ language.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
-      </ul>
-    
-</div>
-</div>
+      </div>
+
+      <!-- Tabla de palabras (aparece al hacer click en la fila del GV) -->
+      <div class="word-panel" *ngIf="showWordList">
+        <div class="word-panel__header">
+          <span class="word-panel__badge">{{ gv.nombre }}</span>
+          <button class="word-panel__close" (click)="showWordList=false">✕</button>
+        </div>
+
+        <div class="gv-search" style="margin-bottom:10px;margin-left:16px;margin-right:16px">
+          <span class="gv-search__icon">⌕</span>
+          <input type="text" class="gv-search__input" placeholder="Buscar palabra..."
+                 [value]="searchPalabra" (input)="onSearchPalabra($any($event.target).value)"/>
+        </div>
+
+        <div class="word-panel__table">
+          <div class="word-panel__thead">
+            <span>{{ gv.nombre_col1 || 'Columna 1' }}</span>
+            <span>{{ gv.nombre_col2 || 'Columna 2' }}</span>
+            <span></span>
+          </div>
+          <div class="word-panel__row" *ngFor="let palabra of palabraPageItems">
+            <input type="text" class="field-input" [(ngModel)]="palabra.col1"/>
+            <input type="text" class="field-input" [(ngModel)]="palabra.col2"/>
+            <button class="btn-sm btn-sm--danger btn-sm--icon" (click)="deletepalabra(palabra.id)">✕</button>
+          </div>
+          <div class="word-panel__empty" *ngIf="listPalabra.length === 0">Sin palabras todavía.</div>
+          <div class="word-panel__empty" *ngIf="listPalabra.length > 0 && filteredPalabra.length === 0">Sin resultados.</div>
+        </div>
+
+        <div class="gv-pagination" *ngIf="palabraTotalPages > 1" style="margin-top:10px;margin-bottom:10px">
+          <button class="gv-pag__btn" (click)="palabraPage=palabraPage-1" [disabled]="palabraPage===0">‹</button>
+          <button *ngFor="let p of [].constructor(palabraTotalPages); let i=index"
+                  class="gv-pag__btn" [class.gv-pag__btn--active]="i===palabraPage"
+                  (click)="palabraPage=i">{{ i+1 }}</button>
+          <button class="gv-pag__btn" (click)="palabraPage=palabraPage+1" [disabled]="palabraPage===palabraTotalPages-1">›</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Columna derecha: Lista de GVs + editor del GV -->
+    <div class="edit-col edit-col--right">
+
+      <div class="edit-panel">
+        <h2 class="edit-panel__title">Grupos de vocabulario</h2>
+
+        <div class="gv-search">
+          <span class="gv-search__icon">⌕</span>
+          <input type="text" class="gv-search__input" placeholder="Buscar grupo..."
+                 [value]="searchGv" (input)="onSearchGv($any($event.target).value)"/>
+        </div>
+
+        <ul class="gv-list">
+          <li *ngFor="let item of gvPageItems" class="gv-list__item"
+              [class.gv-list__item--active]="(showWordList || showEditGV) && item.id === gv.id"
+              (click)="getListPalabras(item)">
+            <span class="gv-list__name">{{ item.nombre }}</span>
+            <div class="gv-list__actions">
+              <button class="btn-sm" (click)="$event.stopPropagation(); openGVEditor(item)">Editar</button>
+              <button class="btn-sm btn-sm--danger" (click)="$event.stopPropagation(); deleteGV(item.id)">Eliminar</button>
+            </div>
+          </li>
+          <li *ngIf="gvPageItems.length === 0" class="gv-list__empty">Sin resultados</li>
+        </ul>
+
+        <div class="gv-pagination" *ngIf="gvTotalPages > 1">
+          <button class="gv-pag__btn" (click)="gvPage=gvPage-1" [disabled]="gvPage===0">‹</button>
+          <button *ngFor="let p of [].constructor(gvTotalPages); let i=index"
+                  class="gv-pag__btn" [class.gv-pag__btn--active]="i===gvPage"
+                  (click)="gvPage=i">{{ i+1 }}</button>
+          <button class="gv-pag__btn" (click)="gvPage=gvPage+1" [disabled]="gvPage===gvTotalPages-1">›</button>
+        </div>
+
+        <!-- Editor del GV unido al panel -->
+        <div class="gv-editor-inline" *ngIf="showEditGV">
+          <div class="gv-editor-inline__fields">
+            <div class="field-group">
+              <label class="field-label">Nombre</label>
+              <input type="text" class="field-input" [(ngModel)]="gv.nombre"/>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Columna 1</label>
+              <input type="text" class="field-input" [(ngModel)]="gv.nombre_col1"/>
+            </div>
+            <div class="field-group">
+              <label class="field-label">Columna 2</label>
+              <input type="text" class="field-input" [(ngModel)]="gv.nombre_col2"/>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Modal: confirmar borrado -->
+  <div class="popup" *ngIf="showConfirmDelete">
+    <div class="popup__content">
+      <a class="close" (click)="showConfirmDelete=false">✖</a>
+      <div class="popup__icon popup__icon--danger">⚠</div>
+      <h1>¿Borrar idioma?</h1>
+      <p class="popup__desc">Esta acción eliminará el idioma <strong>{{ idioma.nombre }}</strong> y todos sus datos. No se puede deshacer.</p>
+      <div class="popup__actions">
+        <a class="popup__btn popup__btn--cancel" (click)="showConfirmDelete=false">Cancelar</a>
+        <a class="popup__btn popup__btn--danger" (click)="confirmarBorrado()">Sí, borrar</a>
+      </div>
+    </div>
+  </div>
+
 </div>

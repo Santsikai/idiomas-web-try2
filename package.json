@@ -4,6 +4,9 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start:all": "concurrently --names \"BACK,FRONT\" --prefix-colors \"cyan,magenta\" \"npm run start:back\" \"npm run start:front\"",
+    "start:back": "cd backend && npm run dev",
+    "start:front": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
@@ -44,6 +47,7 @@
     "@types/jasmine": "~5.1.0",
     "@types/node": "^18.18.0",
     "angular-cli-ghpages": "^2.0.0-beta.2",
+    "concurrently": "^9.2.1",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",

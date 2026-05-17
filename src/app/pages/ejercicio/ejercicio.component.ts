@@ -11,20 +11,52 @@ import { Palabra, PalabraService } from '../../services/palabra/palabra.service'
   styleUrls: ['./ejercicio.component.scss']
 })
 export class EjercicioComponent {
-  showOpciones=true;
-  showEstudiar=false;
-  showPracticar=false;
-  showEjercicio=false;
-  showTipoPractica=false;
-  finEjercicio=false;
+  activeView: 'estudiar' | 'practicar' = 'estudiar';
   gv: GrupoVocabulario = new GrupoVocabulario;
-  listPalabraID:string[]=[];
-  listPalabra:Palabra[]=[];
-  id:any;
-  items=[];
-  showModal=false;
-  col1New:any;
-  col2New:any;
+  listPalabraID: string[] = [];
+  listPalabra: Palabra[] = [];
+  id: any;
+  showModal = false;
+  col1New: any;
+  col2New: any;
+
+  searchPalabra = '';
+  wordPage = 0;
+  readonly wordPerPage = 10;
+
+  get filteredPalabra(): Palabra[] {
+    const q = this.searchPalabra.trim().toLowerCase();
+    return q
+      ? this.listPalabra.filter(p =>
+          p.col1.toLowerCase().includes(q) || p.col2.toLowerCase().includes(q)
+        )
+      : this.listPalabra;
+  }
+
+  get wordTotalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredPalabra.length / this.wordPerPage));
+  }
+
+  get wordPageItems(): Palabra[] {
+    const start = this.wordPage * this.wordPerPage;
+    return this.filteredPalabra.slice(start, start + this.wordPerPage);
+  }
+
+  get wordPageRange(): number[] {
+    return Array.from({ length: this.wordTotalPages }, (_, i) => i);
+  }
+
+  onSearchPalabra(value: string) {
+    this.searchPalabra = value;
+    this.wordPage = 0;
+  }
+
+  setView(view: 'estudiar' | 'practicar') {
+    this.activeView = view;
+    if (view === 'estudiar' && this.listPalabra.length === 0) {
+      this.getlistPalabraEST();
+    }
+  }
   constructor(
     private ARoute:ActivatedRoute,
     private router:Router,
@@ -33,10 +65,9 @@ export class EjercicioComponent {
   ) { }
 
   ngOnInit() {
-    this.id = this.ARoute.snapshot.paramMap.get('gvid')!.replace(/%20/g, " ");
-    
+    this.id = this.ARoute.snapshot.paramMap.get('gvid')!.replace(/%20/g, ' ');
     this.getlistPalabraID();
-  
+    this.getlistPalabraEST();
   }
 async getGV(){
     this.gv = await firstValueFrom(this.gvSV.getGrupoVocabulario(this.id));
@@ -56,221 +87,33 @@ async getGV(){
 
   
 
-  sortOrder: 'asc' | 'desc' = 'asc'; // Orden inicial ascendente
+  sortOrder: 'asc' | 'desc' = 'asc';
   sortedColumn: string | null = null;
 
   sort(column: string): void {
     if (this.sortedColumn === column) {
-      this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc'; // Cambiar el orden si la misma columna se hace clic
+      this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
     } else {
-      this.sortedColumn = column; // Establecer la columna ordenada
-      this.sortOrder = 'asc'; // Establecer el orden ascendente por defecto al cambiar de columna
+      this.sortedColumn = column;
+      this.sortOrder = 'asc';
     }
-
-    // Ordenar la lista en función de la columna y el orden
-    this.listPalabra.sort((a:any, b:any) => {
+    this.listPalabra.sort((a: any, b: any) => {
       const valueA = a[column];
       const valueB = b[column];
-
-      if (valueA < valueB) {
-        return this.sortOrder === 'asc' ? -1 : 1;
-      } else if (valueA > valueB) {
-        return this.sortOrder === 'asc' ? 1 : -1;
-      } else {
-        return 0;
-      }
+      if (valueA < valueB) return this.sortOrder === 'asc' ? -1 : 1;
+      if (valueA > valueB) return this.sortOrder === 'asc' ? 1 : -1;
+      return 0;
     });
+    this.wordPage = 0;
   }
-
-
-  showContents(whatToShow:any){
-    this.totalwords=0;
-        this.totalwordsright=0;
-    if(whatToShow=='practicar'){
-      this.showPracticar=true;
-      this.showOpciones=false;
-      this.showTipoPractica=true;
-      this.showEjercicio=false;
-      this.finEjercicio=false;
-    }else if(whatToShow=='estudiar'){
-      this.showEstudiar=true;
-      this.showOpciones=false;
-      this.showEjercicio=false;
-      this.finEjercicio=false;
-      this.showPracticar=false;
-      this.getlistPalabraEST()
-    }else if(whatToShow=='reintentar'){
-      this.showEstudiar=false;
-      this.showOpciones=false;
-      this.showEjercicio=false;
-      this.showTipoPractica=true;
-      this.finEjercicio=false;
-      this.showPracticar=true;
-    }else if(whatToShow=='opciones'){
-      this.showPracticar=false;
-      this.showOpciones=true;
-      this.showTipoPractica=false;
-      this.showEstudiar=false;
-    }
-  }
-
-  totalwords:number=0;
-  totalwordsright:number=0;
-  wordsdone:number=0;
-  wordShow:string="";
-  wordtoguess:string="";
-  wordguessed:string="";
-  chosentype:string="";
-  title="";
-  async startEjercicio(type:string){
-    this.chosentype=type;
-    this.listPalabraID=this.shuffle(this.listPalabraID);
-    this.showTipoPractica=false;
-    this.showEjercicio=true;
-    this.totalwords=this.listPalabraID.length;
-    const  word= await firstValueFrom(this.palabraSV.getPalabra(this.listPalabraID[0]));
-    if(type=='col1TOcol2'){
-      this.title=this.gv.nombre_col1+' => '+this.gv.nombre_col2;
-      this.wordShow=word.col1;
-      this.wordtoguess=word.col2;
-    }else if(type=='col2TOcol1'){
-      this.title=this.gv.nombre_col2+' => '+this.gv.nombre_col1;
-      this.wordShow=word.col2;
-      this.wordtoguess=word.col1;
-    }else if(type=='mixed'){
-      this.title='Mezcla';
-      const sample:any = (arr:any) => arr[Math.floor(Math.random() * arr.length)];
-      if(sample){
-        this.wordShow=word.col1;
-      this.wordtoguess=word.col2;
-      }
-      else{
-        this.wordShow=word.col2;
-      this.wordtoguess=word.col1;
-      }
-    }
-  }
-  tries=0;
-  wordFailed=false;
-  removeTildes(text: string): string {
-    return text
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^nN](?=\w)/g, (match: string) => {
-        // Reemplazar las letras acentuadas por sus equivalentes sin acento
-        const equivalent: { [key: string]: string } = {
-          á: 'a',
-          é: 'e',
-          í: 'i',
-          ó: 'o',
-          ú: 'u',
-        };
-        return equivalent[match] || match;
-      });
-  }
-  
-  removeTextBetweenParentheses(text: string): string {
-    return text.replace(/\([^)]*\)/g, ''); // Expresión regular para eliminar el contenido entre paréntesis
-  }
-  AnswToCheck=true;
-  async checkAnswer(){
-    debugger;
-    let wordtoguessNormalized=this.removeTextBetweenParentheses(this.removeTildes(this.wordtoguess).toLocaleLowerCase());
-    let wordguessedNormalized=this.removeTildes(this.wordguessed).toLocaleLowerCase();
-    if(wordtoguessNormalized==wordguessedNormalized){
-      this.wordsdone=this.wordsdone+1;
-      this.totalwordsright=this.totalwordsright+1;
-      this.AnswToCheck=false;
-      if(this.wordsdone==this.totalwords){
-        this.wordsdone=0;
-        this.wordShow="";
-        this.wordtoguess="";
-        this.wordguessed="";
-            this.showEjercicio=false;
-            this.finEjercicio=true;
-      }else{
-      let word= await firstValueFrom(this.palabraSV.getPalabra(this.listPalabraID[this.wordsdone]));
-      if(this.wordsdone<=this.totalwords){
-        this.wordguessed="";
-      if(this.chosentype=='col1TOcol2'){
-        this.wordShow=word.col1;
-        this.wordtoguess=word.col2;
-      }else if(this.chosentype=='col2TOcol1'){
-        this.wordShow=word.col2;
-        this.wordtoguess=word.col1;
-      }else if(this.chosentype=='mixed'){
-        const samples:any = (arr:any) => arr[Math.floor(Math.random() * arr.length)];
-        if(samples){
-          this.wordShow=word.col1;
-        this.wordtoguess=word.col2;
-        }
-        else{
-          if(this.totalwords==this.wordsdone-1)
-          this.wordsdone=this.wordsdone+1;
-          this.wordShow=word.col2;
-        this.wordtoguess=word.col1;
-        }
-      }
-    }
-  }
-    }else{
-      this.tries=this.tries+1;
-      if(this.tries==3){
-        this.wordFailed=true;
-        this.wordguessed="";
-        this.wordsdone=this.wordsdone+1;
-      }
-    }
-  }
-  async nextWord(){
-    this.wordFailed=false;
-    this.tries=0;
-    this.AnswToCheck=true;
-    if(this.wordsdone==this.totalwords){
-  this.wordsdone=0;
-  this.wordShow="";
-  this.wordtoguess="";
-  this.wordguessed="";
-      this.showEjercicio=false;
-      this.finEjercicio=true;
-    }else{
-      let word= await firstValueFrom(this.palabraSV.getPalabra(this.listPalabraID[this.wordsdone]));
-    if(this.chosentype=='col1TOcol2'){
-      this.wordShow=word.col1;
-      this.wordtoguess=word.col2;
-    }else if(this.chosentype=='col2TOcol1'){
-      this.wordShow=word.col2;
-      this.wordtoguess=word.col1;
-    }else if(this.chosentype=='mixed'){
-      const sample:any = (arr:any) => arr[Math.floor(Math.random() * arr.length)];
-      if(sample){
-        this.wordShow=word.col1;
-      this.wordtoguess=word.col2;
-      }
-      else{
-        this.wordShow=word.col2;
-      this.wordtoguess=word.col1;
-      }
-    }
-  }
-  }
-
-   shuffle(array: any[]){ 
-    for (let i = array.length - 1; i > 0; i--) { 
-      const j = Math.floor(Math.random() * (i + 1)); 
-      [array[i], array[j]] = [array[j], array[i]]; 
-    } 
-    return array; 
-  };
 
   create() {
-
-    this.palabraSV.createPalabra(this.id,this.col1New,this.col2New).subscribe((res:any)=>{
-      this.listPalabraID.push(res.id);
- this.col1New="";
- this.col2New="";
-  this.showModal=false;
+    this.palabraSV.createPalabra(this.id, this.col1New, this.col2New).subscribe((res: any) => {
+      this.listPalabra.push(res);
+      this.col1New = '';
+      this.col2New = '';
+      this.showModal = false;
     });
-}
+  }
 
 }

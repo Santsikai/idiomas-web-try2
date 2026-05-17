@@ -202,15 +202,29 @@
 
 // SCSS
 a.close {
-    width: 30px;
-    font-size: 20px;
-    color: #c0c5cb;
-    align-self: flex-end;
-    background-color: transparent;
-    border: none;
-    margin-bottom: 10px;
-    text-decoration: none
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.1);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background .2s, color .2s;
+  line-height: 1;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
   }
+}
 .some-text {
   @include absCenter;
   max-width: 800px;
@@ -226,17 +240,31 @@ a.close {
 }
 
 a.accept {
-    background-color: #ed6755;
-    border: none;
-    border-radius: 5px;
-    width: 95%;
-    align-items: center;
-    padding: 14px;
-    font-size: 16px;
-    color: white;
-    box-shadow: 0px 6px 18px -5px rgba(237, 103, 85, 1);
-    text-decoration: none;
+  display: block;
+  background: linear-gradient(135deg, #2d67aa 0%, #184E6C 100%);
+  border: none;
+  border-radius: 8px;
+  width: 100%;
+  padding: 13px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: filter .2s, transform .15s;
+  letter-spacing: .3px;
+
+  &:hover {
+    filter: brightness(1.18);
+    color: #fff;
+    transform: translateY(-2px);
   }
+  &:active {
+    transform: translateY(0);
+  }
+}
 
 .popup {
   height: 100vh;
@@ -244,26 +272,102 @@ a.accept {
   position: fixed;
   top: 0;
   left: 0;
-  background-color: rgba(black, .8);
-  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 10, 25, .78);
+  backdrop-filter: blur(14px);
   z-index: 9999;
   transition: all .3s;
 
-  // The url changes when the anchor is triggered and CSS can watch that
- 
-  
   &__content {
-    @include absCenter; // Our mixin to center horizontally and vertically
-
-    width: 20%;
-    padding: 20px;
+    position: relative;
+    width: min(460px, 90vw);
+    padding: 36px 28px 28px;
     display: flex;
     flex-direction: column;
-    background-color: white;
-    box-shadow: 0 2rem 4rem rgba(black, .2);
-    border-radius: 10px;
-    overflow: hidden; // This will keep the images sharp corners from protruding past the border-radius
+    gap: 14px;
+    background: #0f1f35;
+    border: 1px solid rgba(91, 163, 198, 0.22);
+    box-shadow:
+      0 28px 72px rgba(0, 0, 0, .65),
+      0 0 0 1px rgba(255, 255, 255, .04) inset;
+    border-radius: 16px;
+    box-sizing: border-box;
 
+    h1 {
+      margin: 0 0 4px;
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(91, 163, 198, 0.18);
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 14px;
+      color: rgba(255,255,255,.55);
+      font-weight: 400;
+    }
+
+    input[type='text'] {
+      background: rgba(255, 255, 255, .07);
+      border: 1px solid rgba(91, 163, 198, 0.28);
+      border-radius: 8px;
+      padding: 11px 14px;
+      color: #fff;
+      font-size: 14px;
+      width: 100%;
+      box-sizing: border-box;
+      outline: none;
+      transition: border-color .2s;
+
+      &::placeholder { color: rgba(255,255,255,.35); }
+      &:focus { border-color: #5BA3C6; }
+    }
+
+    input[type='file'] {
+      color: rgba(255,255,255,.7);
+      font-size: 13px;
+      width: 100%;
+      cursor: pointer;
+
+      &::file-selector-button {
+        background: rgba(91, 163, 198, 0.15);
+        border: 1px solid rgba(91, 163, 198, 0.35);
+        border-radius: 6px;
+        color: #5BA3C6;
+        padding: 6px 12px;
+        font-size: 13px;
+        cursor: pointer;
+        margin-right: 10px;
+        transition: background .2s;
+
+        &:hover { background: rgba(91, 163, 198, 0.28); }
+      }
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(255, 255, 255, .7);
+      font-size: 14px;
+      cursor: pointer;
+      user-select: none;
+
+      input[type='checkbox'] {
+        width: 16px;
+        height: 16px;
+        accent-color: #5BA3C6;
+        cursor: pointer;
+      }
+    }
+
+    mat-form-field {
+      width: 100%;
+    }
   }
 
   &__text {
@@ -274,30 +378,31 @@ a.accept {
 
 //spinner
 .square-circle-8 {
-  width:75px;
-  aspect-ratio:1; 
-  display:grid;
+  width: 75px;
+  aspect-ratio: 1;
+  display: grid;
+  margin: 10px auto 0;
 }
 .square-circle-8:before,
 .square-circle-8:after {
-  content:"";
-  grid-area:1/1;
-  width:35px;
-  aspect-ratio:1;
-  box-shadow:0 0 0 3px #000000 inset;
-  filter: drop-shadow(40px 40px 0 #000000);
-  animation:sc8 2s infinite alternate;
+  content: "";
+  grid-area: 1/1;
+  width: 35px;
+  aspect-ratio: 1;
+  box-shadow: 0 0 0 3px #5BA3C6 inset;
+  filter: drop-shadow(40px 40px 0 #2d67aa);
+  animation: sc8 2s infinite alternate;
 }
 .square-circle-8:after {
-  margin:0 0 0 auto; 
-  filter: drop-shadow(-40px 40px 0 #000000);
-  animation-delay:-1s;
+  margin: 0 0 0 auto;
+  filter: drop-shadow(-40px 40px 0 #4a8fcf);
+  animation-delay: -1s;
 }
 @keyframes sc8 {
-  0%,10%   {border-radius:0}
-  30%,40%  {border-radius:50% 0}
-  60%,70%  {border-radius:50%}
-  90%,100% {border-radius:0 50%}
+  0%,10%   { border-radius: 0 }
+  30%,40%  { border-radius: 50% 0 }
+  60%,70%  { border-radius: 50% }
+  90%,100% { border-radius: 0 50% }
 }
 
 /* altura objetivo por item (ajusta si tus items son más altos o bajos) */
@@ -445,6 +550,138 @@ a.accept {
 }
 .ag-courses_box::-webkit-scrollbar-track {
   background: rgba(255,255,255,0.05);
+}
+
+// ── Angular Material: mat-select y búsqueda ──────────────────────────────────
+
+::ng-deep .popup__content {
+
+  .mat-mdc-form-field {
+    width: 100%;
+
+    // Mismo tamaño y aspecto que los input[type='text']
+    .mat-mdc-text-field-wrapper {
+      background: rgba(255, 255, 255, .07) !important;
+      border-radius: 8px !important;
+      border: 1px solid rgba(91, 163, 198, 0.28) !important;
+      padding: 0 !important;
+      transition: border-color .2s;
+
+      &:hover { border-color: rgba(91, 163, 198, 0.5) !important; }
+    }
+
+    // Reducir la altura al mismo padding que los inputs (11px arriba/abajo)
+    .mat-mdc-form-field-infix {
+      padding: 11px 14px !important;
+      min-height: unset !important;
+      width: 100% !important;
+    }
+
+    // Quitar línea inferior de Material
+    .mdc-line-ripple { display: none !important; }
+    .mat-mdc-form-field-focus-overlay { background: transparent !important; }
+
+    // Ocultar label (no hay mat-label, usamos placeholder nativo del mat-select)
+    .mdc-floating-label,
+    .mat-mdc-floating-label {
+      display: none !important;
+    }
+
+    // Placeholder nativo del mat-select
+    .mat-mdc-select-placeholder {
+      color: rgba(255, 255, 255, .35) !important;
+      font-size: 14px !important;
+    }
+
+    // Texto del valor seleccionado — misma fuente que los inputs
+    .mat-mdc-select-value-text {
+      color: #fff !important;
+      font-size: 14px !important;
+    }
+
+    .mat-mdc-select-placeholder {
+      color: rgba(255, 255, 255, .35) !important;
+      font-size: 14px !important;
+    }
+
+    .mat-mdc-select-arrow svg {
+      fill: rgba(91, 163, 198, 0.8) !important;
+    }
+  }
+
+  // Input de búsqueda dentro del mat-select: mismo estilo que los otros inputs
+  mat-select input,
+  .mat-mdc-select input {
+    background: rgba(255, 255, 255, .07);
+    border: 1px solid rgba(91, 163, 198, 0.28);
+    border-radius: 6px;
+    padding: 11px 14px;
+    color: #fff;
+    font-size: 14px;
+    width: calc(100% - 28px);
+    margin: 6px 14px;
+    box-sizing: border-box;
+    outline: none;
+
+    &::placeholder { color: rgba(255,255,255,.35); }
+    &:focus { border-color: #5BA3C6; }
+  }
+}
+
+// Panel desplegable (CDK overlay, fuera del componente)
+::ng-deep .cdk-overlay-container .mat-mdc-select-panel {
+  background: #0f1f35 !important;
+  border: 1px solid rgba(91, 163, 198, 0.25) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, .65) !important;
+  padding: 0 !important;
+  overflow-y: auto !important;
+  max-height: 280px !important;
+
+  // Input fijo en la parte superior — las opciones hacen scroll por debajo
+  input {
+    display: block;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 10 !important;
+    background: #0f1f35 !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(91, 163, 198, 0.28) !important;
+    border-radius: 10px 10px 0 0 !important;
+    padding: 12px 16px !important;
+    color: #fff !important;
+    font-size: 14px;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    outline: none;
+    margin: 0 !important;
+
+    &::placeholder { color: rgba(255,255,255,.35); }
+    &:focus { border-bottom-color: #5BA3C6 !important; }
+  }
+
+  .mat-mdc-option {
+    color: rgba(255, 255, 255, .82) !important;
+    font-size: 14px !important;
+    min-height: 40px !important;
+    transition: background .15s;
+
+    &:hover:not(.mdc-list-item--disabled) {
+      background: rgba(91, 163, 198, 0.12) !important;
+    }
+
+    &.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+      background: rgba(45, 103, 170, 0.28) !important;
+
+      .mdc-list-item__primary-text {
+        color: #5BA3C6 !important;
+      }
+    }
+
+    .mdc-list-item__primary-text {
+      color: inherit !important;
+    }
+  }
 }
 
 

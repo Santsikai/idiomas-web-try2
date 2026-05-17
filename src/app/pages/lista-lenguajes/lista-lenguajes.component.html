@@ -69,8 +69,7 @@
       <h1>Crear nuevo Lenguaje</h1>
         <input type="text" placeholder="Nombre" [(ngModel)]="nombreLeng"/>
         <mat-form-field>
-          <mat-label>Selecciona un idioma</mat-label>
-          <mat-select [(value)]="selectedLanguage">
+          <mat-select placeholder="Selecciona un idioma" [(value)]="selectedLanguage">
             <input (keyup)="onKey($event)">
             <mat-option *ngFor="let language of selectedlangs" [value]="language.code">
               {{ language.name }}

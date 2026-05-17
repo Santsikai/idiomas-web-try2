@@ -94,7 +94,7 @@ closeAyuda(){
   moveToLeng(idioma:Idioma){
     if (typeof window !== 'undefined' && localStorage) {
          localStorage.setItem('langUserID',idioma.user_id)
-         localStorage.setItem('langprivacity',String(idioma.private))
+         localStorage.setItem('langprivacity', String(!!idioma.private))
       }
     this.router.navigate(['/pages/lenguaje',idioma.id]);
   }

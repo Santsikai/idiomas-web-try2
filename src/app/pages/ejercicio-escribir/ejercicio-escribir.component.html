@@ -1,0 +1,86 @@
+
+<div class="ej-wrapper">
+
+  <!-- ── Selector de tipo (barra de pills) ── -->
+  <div class="ej-type-bar" *ngIf="showTipoPractica">
+    <p class="ej-type-bar__label">Elige el modo de práctica</p>
+    <div class="ej-type-bar__pills">
+      <button class="ej-pill" (click)="startEjercicio('col1TOcol2')">
+        <span class="ej-pill__col">{{ gv.nombre_col1 }}</span>
+        <span class="ej-pill__arrow">→</span>
+        <span class="ej-pill__col">{{ gv.nombre_col2 }}</span>
+      </button>
+      <button class="ej-pill" (click)="startEjercicio('col2TOcol1')">
+        <span class="ej-pill__col">{{ gv.nombre_col2 }}</span>
+        <span class="ej-pill__arrow">→</span>
+        <span class="ej-pill__col">{{ gv.nombre_col1 }}</span>
+      </button>
+      <button class="ej-pill ej-pill--mixed" (click)="startEjercicio('mixed')">
+        🔀 Mezcla
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Ejercicio activo ── -->
+  <div class="ej-card" *ngIf="showEjercicio">
+    <!-- Barra de progreso -->
+    <div class="ej-progress">
+      <div class="ej-progress__bar" [style.width.%]="totalwords > 0 ? (wordsdone / totalwords) * 100 : 0"></div>
+    </div>
+
+    <!-- Estadísticas -->
+    <div class="ej-stats">
+      <span class="ej-stats__item">✓ {{ totalwordsright }}/{{ totalwords }} correctas</span>
+      <span class="ej-stats__sep">·</span>
+      <span class="ej-stats__item ej-stats__item--dim">{{ wordsdone }}/{{ totalwords }} vistas</span>
+    </div>
+
+    <!-- Tipo de ejercicio -->
+    <div class="ej-mode-label">{{ title }}</div>
+
+    <!-- Palabra a adivinar -->
+    <div class="ej-word">{{ wordShow }}</div>
+
+    <!-- Respuesta -->
+    <div class="ej-answer">
+      <input
+        class="ej-answer__input"
+        [(ngModel)]="wordguessed"
+        *ngIf="!wordFailed"
+        placeholder="Escribe la respuesta..."
+        (keyup.enter)="tries !== 3 && checkAnswer()"
+      >
+      <div class="ej-answer__reveal" *ngIf="wordFailed" [innerHTML]="wordtoguess"></div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="ej-actions">
+      <button class="ej-btn ej-btn--primary" *ngIf="tries !== 3" (click)="checkAnswer()">
+        Comprobar
+      </button>
+      <button class="ej-btn ej-btn--secondary" *ngIf="tries === 3 && totalwords !== wordsdone" (click)="nextWord()">
+        Siguiente →
+      </button>
+      <button class="ej-btn ej-btn--primary" *ngIf="tries === 3 && totalwords === wordsdone" (click)="nextWord()">
+        Terminar práctica
+      </button>
+    </div>
+
+    <!-- Cambiar tipo -->
+    <a class="ej-change-link" (click)="showContents('practicar')">Cambiar tipo de ejercicio</a>
+  </div>
+
+  <!-- ── Resultados ── -->
+  <div class="ej-results" *ngIf="finEjercicio">
+    <div class="ej-results__score">
+      <div class="ej-results__label">Puntuación final</div>
+      <div class="ej-results__value">{{ totalwordsright }}/{{ totalwords }}</div>
+      <div class="ej-results__pct">{{ totalwords > 0 ? ((totalwordsright / totalwords) * 100 | number:'1.0-0') : 0 }}%</div>
+    </div>
+    <div class="ej-results__actions">
+      <button class="ej-btn ej-btn--secondary" (click)="showContents('reintentar')">Reintentar</button>
+      <button class="ej-btn ej-btn--primary" (click)="showContents('practicar')">Cambiar tipo</button>
+    </div>
+  </div>
+
+</div>
