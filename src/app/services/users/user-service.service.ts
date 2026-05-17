@@ -27,11 +27,12 @@ public login(email: string, pass: string) {
   return this.http.post(`${this.AUTH}/login`, {email, password: pass });
 }
 
-public createUser(email: string, pass: string, rol: string) {
+public createUser(email: string, pass: string, rol: string, username: string) {
   var id = String(Date.now());
   return this.http.post(`${this.AUTH}/register`, {
     id :id,
     email: email,
+    username: username,
     password: pass,
     role_id: rol,
     bloqued: 0
@@ -114,6 +115,7 @@ export class User{
   id:string="";
   password:string="";
   email:string="";
-bloqued:number=0;
-role_id:string="";
- }
+  username:string="";
+  bloqued:number=0;
+  role_id:string="";
+}

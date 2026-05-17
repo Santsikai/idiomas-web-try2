@@ -103,7 +103,7 @@ export class AdministracionComponent implements OnInit {
   }
 
   async newAdmin(){
-    await this.userSV.createUser(this.newPass,this.newEmail,"1");
+    await this.userSV.createUser(this.newPass,this.newEmail,"1", this.newEmail.split('@')[0]);
   }
 
   changeToAdmin(event:any){

@@ -48,13 +48,16 @@ export class LenguajeComponent implements OnInit{
     this.getListaGV();
       });
     }
-   getIdiomaUser(){
-    this.idiomaSV.getListIdiomaUserByIdiomaAndUser(this.idioma.id,this.logUserID!).subscribe((res:any)=>{
-      if(this.idioma.user_id==this.logUserID){
-        this.isUserPropietary=true;
+  getIdiomaUser(){
+    if (!this.logUserID) return;
+    this.idiomaSV.getListIdiomaUserByIdiomaAndUser(this.idioma.id, this.logUserID).subscribe((res:any)=>{
+      if(this.idioma.user_id == this.logUserID){
+        this.isUserPropietary = true;
       }
-      this.hasUserAlreadyCompartido=true;
-      this.idiomauserid=res[0].id;
+      if(res && res.length > 0){
+        this.hasUserAlreadyCompartido = true;
+        this.idiomauserid = res[0].id;
+      }
     })
   }
   getListaGV(){
@@ -77,8 +80,10 @@ export class LenguajeComponent implements OnInit{
 }
 
 compartir(){
-  this.idiomaSV.createIdiomaUser(this.logUserID!,this.idioma.id);
-  this.hasUserAlreadyCompartido=true;
+  this.idiomaSV.createIdiomaUser(this.logUserID!, this.idioma.id).subscribe((res: any) => {
+    this.idiomauserid = res.id;
+    this.hasUserAlreadyCompartido = true;
+  });
 }
 descompartir(){
   this.idiomaSV.deleteIdiomaUser(this.idiomauserid)

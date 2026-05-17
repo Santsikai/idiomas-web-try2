@@ -51,12 +51,12 @@ export class IdiomaService {
     return this.http.get<Idioma[]>(`${this.API}/por_usuario/${userId}`);
   }
 
-  public getListIdiomaByNombre(nombre: string): Observable<Idioma[]> {
-    return this.http.get<Idioma[]>(`${this.API}/publicos?nombre=${nombre.toLowerCase()}`);
+  public getListIdiomaByNombre(nombre: string, usuario: string = ''): Observable<Idioma[]> {
+    return this.http.get<Idioma[]>(`${this.API}/publicos?nombre=${nombre.toLowerCase()}&usuario=${usuario.toLowerCase()}`);
   }
 
-  public getListIdiomaByNombreAndLenguaje(nombre: string, lenguaje: string): Observable<Idioma[]> {
-    return this.http.get<Idioma[]>(`${this.API}/publicos_lenguaje?nombre=${nombre.toLowerCase()}&lenguaje=${lenguaje}`);
+  public getListIdiomaByNombreAndLenguaje(nombre: string, lenguaje: string, usuario: string = ''): Observable<Idioma[]> {
+    return this.http.get<Idioma[]>(`${this.API}/publicos_lenguaje?nombre=${nombre.toLowerCase()}&lenguaje=${lenguaje}&usuario=${usuario.toLowerCase()}`);
   }
 
   public editIdioma(id: string, newname: string, lenguaje: string, pribate: boolean): Observable<any> {

@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { BusquedaLengComponent } from './busqueda-leng.component';
 import { BusquedaLengRoutingModule } from './busqueda-leng-routing.module';
 import { FormsModule } from '@angular/forms';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 
 
@@ -13,7 +15,9 @@ import { FormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     BusquedaLengRoutingModule,
-    FormsModule
+    FormsModule,
+    MatSelectModule,
+    MatFormFieldModule
   ]
 })
 export class BusquedaLengModule { }

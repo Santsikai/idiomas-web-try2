@@ -27,6 +27,7 @@ INSERT IGNORE INTO roles (id, nombre) VALUES
 CREATE TABLE IF NOT EXISTS users (
   id         VARCHAR(100) PRIMARY KEY,
   email      VARCHAR(255) NOT NULL UNIQUE,
+  username   VARCHAR(100) NOT NULL UNIQUE,
   password   VARCHAR(255) NOT NULL,
   role_id    VARCHAR(50)  NOT NULL DEFAULT '2',
   bloqued    TINYINT(1)   NOT NULL DEFAULT 0,

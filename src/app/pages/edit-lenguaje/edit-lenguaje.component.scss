@@ -212,6 +212,62 @@
   gap: 6px;
 }
 
+// ---- Toggle privado/público ----
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+  flex-shrink: 0;
+
+  input { opacity: 0; width: 0; height: 0; }
+
+  &__slider {
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(91,163,198,.3);
+    border-radius: 22px;
+    cursor: pointer;
+    transition: background .2s;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 3px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 14px;
+      height: 14px;
+      background: rgba(255,255,255,.5);
+      border-radius: 50%;
+      transition: left .2s, background .2s;
+    }
+  }
+
+  input:checked + &__slider {
+    background: rgba(231, 76, 60, .35);
+    border-color: rgba(231,76,60,.5);
+
+    &::before {
+      left: 21px;
+      background: #e74c3c;
+    }
+  }
+}
+
+.toggle__label {
+  font-size: 13px;
+  font-family: 'Poppins', sans-serif;
+  color: rgba(255,255,255,.7);
+}
+
 .field-label {
   font-size: 11px;
   font-weight: 600;
@@ -266,6 +322,7 @@
 
     .mdc-line-ripple { display: none !important; }
     .mat-mdc-form-field-focus-overlay { background: transparent !important; }
+    .mat-mdc-form-field-subscript-wrapper { display: none !important; }
 
     .mdc-floating-label,
     .mat-mdc-floating-label { display: none !important; }

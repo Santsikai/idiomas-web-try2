@@ -26,7 +26,7 @@
     <div class="edit-col edit-col--left">
 
       <div class="edit-panel">
-        <h2 class="edit-panel__title">Configuración</h2>
+        <h2 class="edit-panel__title">Lenguaje</h2>
         <div class="field-group">
           <label class="field-label">Nombre</label>
           <input type="text" class="field-input" placeholder="Nombre del idioma" [(ngModel)]="idioma.nombre"/>
@@ -41,6 +41,16 @@
               </mat-option>
             </mat-select>
           </mat-form-field>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Visibilidad</label>
+          <div class="toggle-row">
+            <label class="toggle">
+              <input type="checkbox" [(ngModel)]="idioma.private"/>
+              <span class="toggle__slider"></span>
+            </label>
+            <span class="toggle__label">{{ idioma.private ? 'Privado' : 'Público' }}</span>
+          </div>
         </div>
       </div>
 

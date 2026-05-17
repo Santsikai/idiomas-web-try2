@@ -20,13 +20,19 @@ router.post('/', async (req, res) => {
   }
 });
 
-// GET /idiomas/publicos?nombre=X  (búsqueda pública por nombre)
+// GET /idiomas/publicos?nombre=X&usuario=Y  (búsqueda pública por nombre y/o usuario)
 router.get('/publicos', async (req, res) => {
-  const nombre = (req.query.nombre || '').toLowerCase();
+  const nombre  = (req.query.nombre  || '').toLowerCase();
+  const usuario = (req.query.usuario || '').toLowerCase();
   try {
     const [rows] = await pool.query(
-      'SELECT * FROM idioma WHERE private = 0 AND LOWER(nombre) LIKE ?',
-      [`%${nombre}%`]
+      `SELECT i.*, u.username AS user_username
+         FROM idioma i
+         JOIN users u ON u.id = i.user_id
+        WHERE i.private = 0
+          AND LOWER(i.nombre) LIKE ?
+          AND LOWER(u.username) LIKE ?`,
+      [`%${nombre}%`, `%${usuario}%`]
     );
     res.json(rows);
   } catch (err) {
@@ -34,14 +40,21 @@ router.get('/publicos', async (req, res) => {
   }
 });
 
-// GET /idiomas/publicos_lenguaje?nombre=X&lenguaje=Y
+// GET /idiomas/publicos_lenguaje?nombre=X&lenguaje=Y&usuario=Z
 router.get('/publicos_lenguaje', async (req, res) => {
   const nombre   = (req.query.nombre   || '').toLowerCase();
   const lenguaje = req.query.lenguaje  || '';
+  const usuario  = (req.query.usuario  || '').toLowerCase();
   try {
     const [rows] = await pool.query(
-      'SELECT * FROM idioma WHERE private = 0 AND LOWER(nombre) LIKE ? AND lenguaje = ?',
-      [`%${nombre}%`, lenguaje]
+      `SELECT i.*, u.username AS user_username
+         FROM idioma i
+         JOIN users u ON u.id = i.user_id
+        WHERE i.private = 0
+          AND LOWER(i.nombre) LIKE ?
+          AND i.lenguaje = ?
+          AND LOWER(u.username) LIKE ?`,
+      [`%${nombre}%`, lenguaje, `%${usuario}%`]
     );
     res.json(rows);
   } catch (err) {

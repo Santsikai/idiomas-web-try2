@@ -7,7 +7,7 @@ const router  = express.Router();
 router.get('/bloqueados', async (req, res) => {
   try {
     const [rows] = await pool.query(
-      'SELECT id, email, role_id, bloqued FROM users WHERE bloqued > 0'
+      'SELECT id, email, username, role_id, bloqued FROM users WHERE bloqued > 0'
     );
     res.json(rows);
   } catch (err) {
@@ -19,7 +19,7 @@ router.get('/bloqueados', async (req, res) => {
 router.get('/no_bloqueados', async (req, res) => {
   try {
     const [rows] = await pool.query(
-      'SELECT id, email, role_id, bloqued FROM users WHERE bloqued = 0'
+      'SELECT id, email, username, role_id, bloqued FROM users WHERE bloqued = 0'
     );
     res.json(rows);
   } catch (err) {
@@ -31,7 +31,7 @@ router.get('/no_bloqueados', async (req, res) => {
 router.get('/admins', async (req, res) => {
   try {
     const [rows] = await pool.query(
-      "SELECT id, email, role_id, bloqued FROM users WHERE role_id = 'admin'"
+      "SELECT id, email, username, role_id, bloqued FROM users WHERE role_id = 'admin'"
     );
     res.json(rows);
   } catch (err) {
@@ -43,7 +43,7 @@ router.get('/admins', async (req, res) => {
 router.get('/no_admins', async (req, res) => {
   try {
     const [rows] = await pool.query(
-      "SELECT id, email, role_id, bloqued FROM users WHERE role_id != 'admin'"
+      "SELECT id, email, username, role_id, bloqued FROM users WHERE role_id != 'admin'"
     );
     res.json(rows);
   } catch (err) {

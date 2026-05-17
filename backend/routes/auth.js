@@ -8,20 +8,23 @@ const JWT_SECRET = process.env.JWT_SECRET || 'secret';
 
 // POST /auth/register
 router.post('/register', async (req, res) => {
-  const { id, email, password, role_id, bloqued } = req.body;
-  if (!id || !email || !password || !role_id) {
+  const { id, email, username, password, role_id, bloqued } = req.body;
+  if (!id || !email || !username || !password || !role_id) {
     return res.status(400).json({ error: 'Faltan campos obligatorios' });
   }
   try {
     const hash = await bcrypt.hash(password, 10);
     await pool.query(
-      'INSERT INTO users (id, email, password, role_id, bloqued) VALUES (?, ?, ?, ?, ?)',
-      [id, email, hash, role_id, bloqued ?? 0]
+      'INSERT INTO users (id, email, username, password, role_id, bloqued) VALUES (?, ?, ?, ?, ?, ?)',
+      [id, email, username, hash, role_id, bloqued ?? 0]
     );
     res.status(201).json({ message: 'Usuario creado', id });
   } catch (err) {
     if (err.code === 'ER_DUP_ENTRY') {
-      return res.status(409).json({ error: 'El email ya está registrado' });
+      const msg = err.message.includes('uq_username') || err.message.includes('username')
+        ? 'El nombre de usuario ya está en uso'
+        : 'El email ya está registrado';
+      return res.status(409).json({ error: msg });
     }
     res.status(500).json({ error: err.message });
   }
@@ -49,7 +52,7 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Credenciales incorrectas' });
     }
     const token = jwt.sign(
-      { id: user.id, email: user.email, role_id: user.role_id },
+      { id: user.id, email: user.email, username: user.username, role_id: user.role_id },
       JWT_SECRET,
       { expiresIn: '8h' }
     );

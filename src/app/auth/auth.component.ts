@@ -11,6 +11,7 @@ export class AuthComponent implements OnInit {
   email = '';
   password = '';
   passwordc = '';
+  username = '';
   emailEnvio = '';
 
   showAlertBloqueado = false;
@@ -60,7 +61,7 @@ export class AuthComponent implements OnInit {
       return;
     }
 
-    this.userSV.createUser(this.email, this.password, '2').subscribe({
+    this.userSV.createUser(this.email, this.password, '2', this.username).subscribe({
       next: (res: any) => {
         this.userSV.setLoggedUser(res as User);
         this.router.navigate(['/pages']);

@@ -19,7 +19,7 @@
   <!-- Cards -->
   <div class="ag-format-container">
     <div class="ag-courses_box">
-      <div class="ag-courses_item">
+      <div class="ag-courses_item" *ngIf="isUserPropietary">
         <a (click)="showModal=true" class="ag-courses-item_link">
           <div class="ag-courses-item_bg"></div>
           <div class="ag-courses-item_title">+ Añadir Grupo</div>
