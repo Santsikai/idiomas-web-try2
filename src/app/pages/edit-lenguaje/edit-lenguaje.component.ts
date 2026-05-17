@@ -25,6 +25,10 @@ export class EditLenguajeComponent implements OnInit{
   showWordList=false;
   selectedlangs=lang;
   showConfirmDelete=false;
+  showConfirmDeleteGV=false;
+  pendingDeleteGVId: any = null;
+  showConfirmDeletePalabra=false;
+  pendingDeletePalabraId: any = null;
   alertMsg='';
   alertType: 'success'|'error'|''='';
   private alertTimer: any;
@@ -142,6 +146,13 @@ confirmarBorrado(){
   });
 }
 deleteGV(id: any) {
+  this.pendingDeleteGVId = id;
+  this.showConfirmDeleteGV = true;
+}
+confirmarBorradoGV() {
+  const id = this.pendingDeleteGVId;
+  this.showConfirmDeleteGV = false;
+  this.pendingDeleteGVId = null;
   this.gvSV.deleteGrupoVocabulario(id).subscribe({
     next: () => {
       this.listgv = this.listgv.filter(g => g.id !== id);
@@ -152,6 +163,13 @@ deleteGV(id: any) {
   });
 }
 deletepalabra(id: any) {
+  this.pendingDeletePalabraId = id;
+  this.showConfirmDeletePalabra = true;
+}
+confirmarBorradoPalabra() {
+  const id = this.pendingDeletePalabraId;
+  this.showConfirmDeletePalabra = false;
+  this.pendingDeletePalabraId = null;
   this.palabraSV.deletePalabra(id).subscribe({
     next: () => {
       this.listPalabra = this.listPalabra.filter(p => p.id !== id);

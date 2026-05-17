@@ -66,7 +66,7 @@
           <div class="word-panel__row" *ngFor="let palabra of palabraPageItems">
             <input type="text" class="field-input" [(ngModel)]="palabra.col1"/>
             <input type="text" class="field-input" [(ngModel)]="palabra.col2"/>
-            <button class="btn-sm btn-sm--danger btn-sm--icon" (click)="deletepalabra(palabra.id)">✕</button>
+            <button class="btn-sm btn-sm--danger btn-sm--icon" (click)="pendingDeletePalabraId=palabra.id; showConfirmDeletePalabra=true">✕</button>
           </div>
           <div class="word-panel__empty" *ngIf="listPalabra.length === 0">Sin palabras todavía.</div>
           <div class="word-panel__empty" *ngIf="listPalabra.length > 0 && filteredPalabra.length === 0">Sin resultados.</div>
@@ -102,7 +102,7 @@
             <span class="gv-list__name">{{ item.nombre }}</span>
             <div class="gv-list__actions">
               <button class="btn-sm" (click)="$event.stopPropagation(); openGVEditor(item)">Editar</button>
-              <button class="btn-sm btn-sm--danger" (click)="$event.stopPropagation(); deleteGV(item.id)">Eliminar</button>
+              <button class="btn-sm btn-sm--danger" (click)="$event.stopPropagation(); pendingDeleteGVId=item.id; showConfirmDeleteGV=true">Eliminar</button>
             </div>
           </li>
           <li *ngIf="gvPageItems.length === 0" class="gv-list__empty">Sin resultados</li>
@@ -140,7 +140,7 @@
 
   </div>
 
-  <!-- Modal: confirmar borrado -->
+  <!-- Modal: confirmar borrado idioma -->
   <div class="popup" *ngIf="showConfirmDelete">
     <div class="popup__content">
       <a class="close" (click)="showConfirmDelete=false">✖</a>
@@ -150,6 +150,34 @@
       <div class="popup__actions">
         <a class="popup__btn popup__btn--cancel" (click)="showConfirmDelete=false">Cancelar</a>
         <a class="popup__btn popup__btn--danger" (click)="confirmarBorrado()">Sí, borrar</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: confirmar borrado GV -->
+  <div class="popup" *ngIf="showConfirmDeleteGV">
+    <div class="popup__content">
+      <a class="close" (click)="showConfirmDeleteGV=false">✖</a>
+      <div class="popup__icon popup__icon--danger">⚠</div>
+      <h1>¿Borrar grupo?</h1>
+      <p class="popup__desc">Se eliminarán el grupo y <strong>todas sus palabras</strong>. Esta acción no se puede deshacer.</p>
+      <div class="popup__actions">
+        <a class="popup__btn popup__btn--cancel" (click)="showConfirmDeleteGV=false">Cancelar</a>
+        <a class="popup__btn popup__btn--danger" (click)="confirmarBorradoGV()">Sí, borrar</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: confirmar borrado palabra -->
+  <div class="popup" *ngIf="showConfirmDeletePalabra">
+    <div class="popup__content">
+      <a class="close" (click)="showConfirmDeletePalabra=false">✖</a>
+      <div class="popup__icon popup__icon--danger">⚠</div>
+      <h1>¿Borrar palabra?</h1>
+      <p class="popup__desc">Esta palabra se eliminará permanentemente y no se podrá recuperar.</p>
+      <div class="popup__actions">
+        <a class="popup__btn popup__btn--cancel" (click)="showConfirmDeletePalabra=false">Cancelar</a>
+        <a class="popup__btn popup__btn--danger" (click)="confirmarBorradoPalabra()">Sí, borrar</a>
       </div>
     </div>
   </div>
